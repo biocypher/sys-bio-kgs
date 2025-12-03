@@ -14,20 +14,24 @@ RUN apt-get update && apt-get install -y \
     libcairo2-dev \
     libglib2.0-dev \
     libffi-dev \
-    libgirepository1.0-dev \
     gobject-introspection \
     cmake \
+    libgirepository-2.0-dev \
+    python3-gi \
+    gir1.2-pango-1.0 \
+    libpango-1.0-0 \
+    libpangocairo-1.0-0 \
+    libpangoft2-1.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements and install Python dependencies
 COPY pyproject.toml README.md ./
 COPY src/ ./src/
 
-# Make sure pip itself is up to date
-RUN pip install --upgrade pip
+RUN mkdir -p /etc/pip && printf "[global]\nno-binary = bezier\n" > /etc/pip.conf
 
-# Force a PyGObject version that still works with libgirepository1.0
-RUN pip install --no-cache-dir "PyGObject>=3.46,<3.51"
+ENV BEZIER_NO_EXTENSION=true
+RUN pip install --no-cache-dir bezier
 
 # Now install your package + momapy, which will reuse that PyGObject
 RUN pip install --no-cache-dir -e .

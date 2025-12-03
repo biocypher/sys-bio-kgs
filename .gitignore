@@ -2,6 +2,9 @@ biocypher-log/
 biocypher-out/
 .cache/
 
+#VS dev container extension
+.devcontainer/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
