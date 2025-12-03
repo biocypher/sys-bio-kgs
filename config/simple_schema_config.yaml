@@ -5,6 +5,14 @@
 # SBGN and SBML biochemical reaction components mapped to SBO classes
 # Using SBO classes directly where they exist (no is_a if class exists in SBO)
 
+
+# SBML - species, SBGN - entity pool
+physical entity:
+  represented_as: node
+  input_label: entity
+  properties:
+    name: string
+
 # SBML - reaction, SBGN - process
 process: # SBO_0000375: process
   represented_as: node
@@ -37,4 +45,10 @@ product: # SBO_0000011: product
 modifier: # SBO_0000019: modifier
   represented_as: edge
   input_label: modifier
+  properties:
+
+# SBML and SBGN: localisation in a compartment
+contained entity: # SBO_0000664
+  represented_as: edge
+  input_label: contained entity
   properties:
