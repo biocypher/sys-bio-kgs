@@ -144,3 +144,6 @@ data/
 *.db
 *.sqlite
 *.ipynb
+scripts/sbgn/
+scripts/sbgn_annotated/
+scripts/sbml/
