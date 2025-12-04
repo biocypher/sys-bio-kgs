@@ -28,15 +28,15 @@ class MoMaPySBGNAdapter:
 
     # Mapping of SBGN glyph classes to BioCypher node types (using SBO class names)
     GLYPH_CLASS_TO_NODE_TYPE = {
-        "macromolecule": ("macromolecule", "SBO_0000245", "physical entity"),  # SBO_0000245: macromolecule
+        "macromolecule": ("macromolecule", "SBO_0000245", "physical entity representation"),  # SBO_0000245: macromolecule
         "nucleic acid feature": ("information macromolecule", "SBO_0000246", "macromolecule"),  # SBO_0000246: information macromolecule
         "nucleicacidfeature": ("information macromolecule", "SBO_0000246", "macromolecule"),  # SBO_0000246: information macromolecule
-        "simple chemical": ("simple chemical", "SBO_0000247", "physical entity"),  # SBO_0000247: simple chemical
+        "simple chemical": ("simple chemical", "SBO_0000247", "physical entity representation"),  # SBO_0000247: simple chemical
         "process": ("process", "SBO_0000375", None),  # SBO_0000375: process
         "source and sink": ("sink reaction", "SBO_0000632", None),  # SBO_0000632: sink reaction
-        "emptyset": ("empty set", "SBO_0000355", "physical entity"),  # SBO_0000355: empty set
+        "emptyset": ("empty set", "SBO_0000355", "physical entity representation"),  # SBO_0000355: empty set
         "compartment": ("compartment", "SBO_0000290", None),
-        "physical entity": ("physical entity", "SBO_0000236", None),  # SBO_0000288: physical entity
+        "physical entity": ("physical entity representation", "SBO_0000236", None),  # SBO_0000288: physical entity
     }
 
     # Mapping of SBGN arc classes to BioCypher edge types (using SBO class names where applicable)
@@ -301,7 +301,7 @@ class MoMaPySBGNAdapter:
 
         for k, node in self.nodes.items():
             if k != "model":
-                self.edges[f"{node[0]}_in_model"] = (f"{node[0]}_in_model", node[0], "model", f"is {node[3]} of", {})
+                self.edges[f"{node[0]}_in_model"] = (f"{node[0]}_in_model", node[0], "model", f"{node[3]}_of", {})
                 edge_count += 1
 
         for glyph in glyphs:

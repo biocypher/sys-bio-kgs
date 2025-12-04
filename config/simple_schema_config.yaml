@@ -304,24 +304,54 @@ contained entity: # SBO_0000664
     isInstanceOf: list[string]
 
 # edges from model to its components
-is a entity of:
+is entity of:
   is_a: participant # SBO_0000235
   represented_as: edge
   input_label: entity_of
   target: model
   source: physical entity representation
 
-is a process of:
+is process of:
   is_a: participant # SBO_0000235
   represented_as: edge
   input_label: process_of
   target: model
   source: process
 
-is a compartment of:
+is compartment of:
   is_a: participant # SBO_0000235
   represented_as: edge
   input_label: compartment_of
   target: model
   source: physical compartment
+
+empty set:
+  is_a: physical entity representation
+  inherit_properties: true
+  represented_as: node
+  input_label: empty set
+
+macromolecule:
+  is_a: physical entity representation
+  inherit_properties: true
+  represented_as: node
+  input_label: macromolecule
+
+information macromolecule:
+  is_a: macromolecule
+  inherit_properties: true
+  represented_as: node
+  input_label: information macromolecule
+
+inhibition:
+  is_a: modifier
+  inherit_properties: true
+  represented_as: edge
+  input_label: inhibition
+
+necessary stimulation:
+  is_a: modifier
+  inherit_properties: true
+  represented_as: edge
+  input_label: necessary stimulation
 
