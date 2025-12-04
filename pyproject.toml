@@ -25,6 +25,7 @@ momapy = [
     "momapy>=0.1.3",
 ]
 similarity = [
+    "torch==2.5.1+cpu",
     "sentence-transformers>=5.0.0"
 ]
 momapy_sbml_kinetic = [
