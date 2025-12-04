@@ -1,0 +1,7 @@
+question	answer	comment
+What is the scope of this knowledge graph? Give me a brief summary of the biology represented.		
+What are the inputs, regulators, and phenotypic outputs of this system?		
+What are key compartments in the knowledge graph, and how are they related?		
+Which are the most interconnected elements of the knowledge graph?		
+For [element] in the knowledge graph, what are downstream pathways/interactions/phenotypes?		
+For [elementA] and [elementB] in the knowledge graph, what is their relationship?		
