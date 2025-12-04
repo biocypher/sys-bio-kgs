@@ -1,6 +1,8 @@
 import logging
 from pathlib import Path
 from typing import Iterator, Tuple, Dict, Any
+import base64
+from collections import defaultdict
 
 from momapy.sbml.io import sbml
 
@@ -40,6 +42,7 @@ class SBMLAdapter:
         result = sbml.SBMLReader.read(self.sbml_path)
         self.model = result.obj
         self.annotations = result.annotations
+        self.notes = result.notes
 
         logger.info("SBML model loaded successfully")
 
@@ -220,8 +223,44 @@ class SBMLAdapter:
         model = self.model
         properties = {
             "name": model.name,
+            "notes_base64": self._parse_notes(self.notes.get(model, None)),
         }
+        properties.update(self._parse_annotations(self.annotations.get(model, None)))
         return properties
+
+
+    # --------------------------------------------------------------
+    # HELPERS
+    # --------------------------------------------------------------
+
+    @staticmethod
+    def _parse_notes(notes: frozenset) -> str:
+        """Parse notes from SBML elements."""
+        if notes is None:
+            return None
+
+        # encode notes in base64 for compatibility with neo4j CSV import
+        for note in notes:
+            break
+
+        note = base64.b64encode(note, altchars=None).decode()
+        return note
+
+    @staticmethod
+    def _parse_annotations(annotations: frozenset) -> Dict[str, Any]:
+        """Parse annotations from SBML elements."""
+        if annotations is None:
+            return {}
+
+        parsed_annotations = defaultdict(list)
+        for annotation in annotations:
+            qualifier = annotation.qualifier.value
+            for resource in annotation.resources:
+                parsed_annotations[qualifier].append(resource)
+
+        return parsed_annotations
+
+
 
     # --------------------------------------------------------------
     # METADATA

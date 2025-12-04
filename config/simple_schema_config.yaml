@@ -12,60 +12,293 @@ occurring entity representation: # SBO_0000231: occurring entity representation
   properties:
     name: string
     sbo: string
+
+    notes_base64: string
     notes: string
-    annotations: list[string]
+
+    # qualifierss from momapy
+    encodes: list[string]
+    hasPart: list[string]
+    hasProperty: list[string]
+    hasVersion: list[string]
+    is: list[string]
+    isDescribedBy: list[string]
+    isEncodedBy: list[string]
+    isHomologTo: list[string]
+    isPartOf: list[string]
+    isPropertyOf: list[string]
+    isVersionOf: list[string]
+    occursIn: list[string]
+    hasTaxon: list[string]
+    hasInstance: list[string]
+    is: list[string]
+    isDerivedFrom: list[string]
+    isDescribedBy: list[string]
+    isInstanceOf: list[string]
 
 model:
   is_a: occurring entity representation # SBO_0000231: occurring entity representation
   represented_as: node
   input_label: model
-  inherit_properties: true
+
   properties:
+    name: string
+    sbo: string
+
+    notes_base64: string
+    notes: string
+
+    # qualifierss from momapy
+    encodes: list[string]
+    hasPart: list[string]
+    hasProperty: list[string]
+    hasVersion: list[string]
+    is: list[string]
     isDescribedBy: list[string]
+    isEncodedBy: list[string]
+    isHomologTo: list[string]
+    isPartOf: list[string]
+    isPropertyOf: list[string]
+    isVersionOf: list[string]
+    occursIn: list[string]
+    hasTaxon: list[string]
+    hasInstance: list[string]
+    is: list[string]
+    isDerivedFrom: list[string]
+    isDescribedBy: list[string]
+    isInstanceOf: list[string]
 
 # SBML - species, SBGN - entity pool
 physical entity representation: # SBO_0000236: physical entity representation
   represented_as: node
+  inherit_properties: true
   input_label: entity
+
   properties:
     name: string
+    sbo: string
+
+    notes_base64: string
+    notes: string
+
+    # qualifierss from momapy
+    encodes: list[string]
+    hasPart: list[string]
+    hasProperty: list[string]
+    hasVersion: list[string]
+    is: list[string]
+    isDescribedBy: list[string]
+    isEncodedBy: list[string]
+    isHomologTo: list[string]
+    isPartOf: list[string]
+    isPropertyOf: list[string]
+    isVersionOf: list[string]
+    occursIn: list[string]
+    hasTaxon: list[string]
+    hasInstance: list[string]
+    is: list[string]
+    isDerivedFrom: list[string]
+    isDescribedBy: list[string]
+    isInstanceOf: list[string]
 
 # SBML - reaction, SBGN - process
 process: # SBO_0000375: process
   represented_as: node
+  inherit_properties: true
   input_label: process
+
   properties:
     name: string
+    sbo: string
+
+    notes_base64: string
+    notes: string
+
+    # qualifierss from momapy
+    encodes: list[string]
+    hasPart: list[string]
+    hasProperty: list[string]
+    hasVersion: list[string]
+    is: list[string]
+    isDescribedBy: list[string]
+    isEncodedBy: list[string]
+    isHomologTo: list[string]
+    isPartOf: list[string]
+    isPropertyOf: list[string]
+    isVersionOf: list[string]
+    occursIn: list[string]
+    hasTaxon: list[string]
+    hasInstance: list[string]
+    is: list[string]
+    isDerivedFrom: list[string]
+    isDescribedBy: list[string]
+    isInstanceOf: list[string]
+
 
 # SBML - compartment, SBGN - compartment
 physical compartment: # SBO_0000290: compartment
   represented_as: node
+  inherit_properties: true
   input_label: compartment
+
   properties:
     name: string
+    sbo: string
+
+    notes_base64: string
+    notes: string
+
+    # qualifierss from momapy
+    encodes: list[string]
+    hasPart: list[string]
+    hasProperty: list[string]
+    hasVersion: list[string]
+    is: list[string]
+    isDescribedBy: list[string]
+    isEncodedBy: list[string]
+    isHomologTo: list[string]
+    isPartOf: list[string]
+    isPropertyOf: list[string]
+    isVersionOf: list[string]
+    occursIn: list[string]
+    hasTaxon: list[string]
+    hasInstance: list[string]
+    is: list[string]
+    isDerivedFrom: list[string]
+    isDescribedBy: list[string]
+    isInstanceOf: list[string]
 
 # SBML - speciesReference/reactant, SBGN - consumption arc
 reactant: # SBO_0000010: reactant
   represented_as: edge
+  inherit_properties: true
   input_label: reactant
   properties:
     stoichiometry: float
 
+    name: string
+    sbo: string
+
+    notes_base64: string
+    notes: string
+
+    # qualifierss from momapy
+    encodes: list[string]
+    hasPart: list[string]
+    hasProperty: list[string]
+    hasVersion: list[string]
+    is: list[string]
+    isDescribedBy: list[string]
+    isEncodedBy: list[string]
+    isHomologTo: list[string]
+    isPartOf: list[string]
+    isPropertyOf: list[string]
+    isVersionOf: list[string]
+    occursIn: list[string]
+    hasTaxon: list[string]
+    hasInstance: list[string]
+    is: list[string]
+    isDerivedFrom: list[string]
+    isDescribedBy: list[string]
+    isInstanceOf: list[string]
+
 # SBML - speciesReference/product, SBGN - production arc
 product: # SBO_0000011: product
   represented_as: edge
+  inherit_properties: true
   input_label: product
   properties:
     stoichiometry: float
 
+    name: string
+    sbo: string
+
+    notes_base64: string
+    notes: string
+
+    # qualifierss from momapy
+    encodes: list[string]
+    hasPart: list[string]
+    hasProperty: list[string]
+    hasVersion: list[string]
+    is: list[string]
+    isDescribedBy: list[string]
+    isEncodedBy: list[string]
+    isHomologTo: list[string]
+    isPartOf: list[string]
+    isPropertyOf: list[string]
+    isVersionOf: list[string]
+    occursIn: list[string]
+    hasTaxon: list[string]
+    hasInstance: list[string]
+    is: list[string]
+    isDerivedFrom: list[string]
+    isDescribedBy: list[string]
+    isInstanceOf: list[string]
+
+
 # SBML - modifierSpeciesReference, SBGN - modifier arc
 modifier: # SBO_0000019: modifier
   represented_as: edge
+  inherit_properties: true
   input_label: modifier
+
   properties:
+    name: string
+    sbo: string
+
+    notes_base64: string
+    notes: string
+
+    # qualifierss from momapy
+    encodes: list[string]
+    hasPart: list[string]
+    hasProperty: list[string]
+    hasVersion: list[string]
+    is: list[string]
+    isDescribedBy: list[string]
+    isEncodedBy: list[string]
+    isHomologTo: list[string]
+    isPartOf: list[string]
+    isPropertyOf: list[string]
+    isVersionOf: list[string]
+    occursIn: list[string]
+    hasTaxon: list[string]
+    hasInstance: list[string]
+    is: list[string]
+    isDerivedFrom: list[string]
+    isDescribedBy: list[string]
+    isInstanceOf: list[string]
+
 
 # SBML and SBGN: localisation in a compartment
 contained entity: # SBO_0000664
   represented_as: edge
+  inherit_properties: true
   input_label: contained entity
+
   properties:
+    name: string
+    sbo: string
+    notes_base64: string
+    notes: string
+
+    # qualifierss from momapy
+    encodes: list[string]
+    hasPart: list[string]
+    hasProperty: list[string]
+    hasVersion: list[string]
+    is: list[string]
+    isDescribedBy: list[string]
+    isEncodedBy: list[string]
+    isHomologTo: list[string]
+    isPartOf: list[string]
+    isPropertyOf: list[string]
+    isVersionOf: list[string]
+    occursIn: list[string]
+    hasTaxon: list[string]
+    hasInstance: list[string]
+    is: list[string]
+    isDerivedFrom: list[string]
+    isDescribedBy: list[string]
+    isInstanceOf: list[string]
