@@ -199,13 +199,13 @@ class MoMaPySBGNAdapter:
 
         node_count = 0
 
-        self.nodes["model"] = ("model", "model", {"source": self.data_source, "sbo_term": "SBO_0000231"}, "model")  # SBO_0000411: model
+        self.nodes["model"] = ("model", "model", {"source": self.data_source, "label": "model", "sbo_term": "SBO_0000231"}, "model")  # SBO_0000411: model
 
         for compartment in compartments:
-            self.nodes[compartment] = (compartment.id_, "compartment", {"name": compartment.label}, "compartment")
+            self.nodes[compartment] = (compartment.id_, "compartment", {"label": compartment.label}, "compartment")
 
         if self.add_default_compartments:
-            self.nodes["default_compartment"] = ("default_compartment", "compartment", {"name": "default"}, "compartment")
+            self.nodes["default_compartment"] = ("default_compartment", "compartment", {"label": "default"}, "compartment")
 
         for glyph in glyphs:            
             # momapy object structure
@@ -301,7 +301,7 @@ class MoMaPySBGNAdapter:
 
         for k, node in self.nodes.items():
             if k != "model":
-                self.edges[f"{node[0]}_in_model"] = (f"{node[0]}_in_model", node[0], "model", f"{node[3]}_of", {})
+                self.edges[f"{node[0]}_in_model"] = (f"{node[0]}_in_model", node[0], "model", f"{node[3]}_of", {"label": f"{node[3]} of model"})
                 edge_count += 1
 
         for glyph in glyphs:

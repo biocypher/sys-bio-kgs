@@ -47,6 +47,9 @@ RUN mkdir -p /etc/pip && printf "[global]\nno-binary = bezier\n" > /etc/pip.conf
 ENV BEZIER_NO_EXTENSION=true
 RUN pip install --no-cache-dir bezier
 
+# Use CPU-only PyTorch to reduce image size (from ~2-3GB to ~200MB)
+ENV PIP_EXTRA_INDEX_URL=https://download.pytorch.org/whl/cpu
+
 # Now install your package + momapy, which will reuse that PyGObject
 RUN pip install --no-cache-dir -e .
 

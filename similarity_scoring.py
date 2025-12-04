@@ -215,17 +215,17 @@ def compute_pairwise_similarities(
         if edge_iterators and model_idx < len(edge_iterators):
             edges_list = list(edge_iterators[model_idx])
             for edge_id, source_id, target_id, edge_type, props in edges_list:
-                # Track reactants (edges where target is a process)
-                if edge_type == 'reactant':
+                # Track reactants/consumption (incoming to process: entity -> process)
+                if edge_type in ['reactant', 'consumption']:
                     if target_id not in process_context:
                         process_context[target_id] = {'reactants': [], 'products': [], 'modifiers': []}
                     process_context[target_id]['reactants'].append(source_id)
-                # Track products (edges where source is a process)
-                elif edge_type == 'product':
+                # Track products/production (outgoing from process: process -> entity)
+                elif edge_type in ['product', 'production']:
                     if source_id not in process_context:
                         process_context[source_id] = {'reactants': [], 'products': [], 'modifiers': []}
                     process_context[source_id]['products'].append(target_id)
-                # Track modifiers (inhibition, catalysis, stimulation, etc.)
+                # Track modifiers (all modulation types: entity -> process)
                 elif edge_type in ['inhibition', 'catalysis', 'stimulation', 'modulation', 'necessary stimulation', 'modifier']:
                     if target_id not in process_context:
                         process_context[target_id] = {'reactants': [], 'products': [], 'modifiers': []}
