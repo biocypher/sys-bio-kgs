@@ -21,9 +21,6 @@ dependencies = [
     "lxml>=6.0.0"
 ]
 [project.optional-dependencies]
-momapy = [
-    "momapy @ git+https://github.com/adrienrougny/momapy.git@no_graphics",
-]
 similarity = [
     "torch==2.5.1+cpu",
     "sentence-transformers>=5.0.0"
