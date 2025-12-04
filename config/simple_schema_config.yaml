@@ -355,3 +355,13 @@ necessary stimulation:
   represented_as: edge
   input_label: necessary stimulation
 
+relationship:
+  inherit_properties: true
+  represented_as: edge
+  input_label: relationship 
+
+similarity:
+  is_a: relationship
+  inherit_properties: true
+  represented_as: edge
+  input_label: similarity

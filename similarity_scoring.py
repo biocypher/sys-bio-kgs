@@ -194,7 +194,6 @@ def compute_pairwise_similarities(
         Tuples of (edge_id, source_id, target_id, edge_type, properties_dict)
         where edge_type is "similarity" and properties contain the similarity weight
     """
-    logger.info(f"Loading embedding model: {embedding_model}")
     model = SentenceTransformer(embedding_model)
     
     # Normalize weights for additive components only (structure is penalty-based)
@@ -203,19 +202,13 @@ def compute_pairwise_similarities(
     w_annotations = weight_annotations / total_weight
     w_db_ids = weight_db_ids / total_weight
     
-    logger.info(f"Component weights: names={w_names:.3f}, annotations={w_annotations:.3f}, "
-                f"db_ids={w_db_ids:.3f}, structure_penalty={penalty_structure:.3f}, "
-                f"process_context={weight_process_context:.3f}")
-    
     # Convert iterators to lists and extract components for each model
     all_nodes = []  # List of (model_idx, node_id, node_type, properties, component_embeddings_dict)
     
     for model_idx, node_iterator in enumerate(node_iterators):
         model_name = model_names[model_idx] if model_names else f"model_{model_idx}"
-        logger.info(f"Processing nodes from {model_name}")
         
         nodes_list = list(node_iterator)
-        logger.info(f"  Found {len(nodes_list)} nodes")
         
         # Build edge context for process nodes if edges provided
         process_context = {}
@@ -268,11 +261,8 @@ def compute_pairwise_similarities(
         
         # Generate embeddings for each component separately
         if node_data:
-            logger.info(f"  Generating embeddings for {len(node_data)} nodes across 4 components")
-            
             embeddings_dict = {}
             for component_name, texts in components_dict.items():
-                logger.info(f"    Encoding {component_name}...")
                 embeddings_dict[component_name] = model.encode(texts, show_progress_bar=False, 
                                                               convert_to_numpy=True)
             
@@ -286,10 +276,7 @@ def compute_pairwise_similarities(
                 }
                 all_nodes.append((model_idx, node_id, node_type, properties, component_embeddings, context_info, node_has_content))
     
-    logger.info(f"Total nodes across all models: {len(all_nodes)}")
-    
     # Build component embedding matrices for efficient similarity computation
-    logger.info("Building embedding matrices for each component")
     n_nodes = len(all_nodes)
     embedding_dim = all_nodes[0][4]['names'].shape[0]  # Get embedding dimension
     
@@ -307,23 +294,18 @@ def compute_pairwise_similarities(
             emb_matrices[component_name][idx] = component_embeddings[component_name]
     
     # Normalize embeddings for cosine similarity (makes dot product = cosine similarity)
-    logger.info("Normalizing embedding matrices")
     for component_name in emb_matrices.keys():
         norms = np.linalg.norm(emb_matrices[component_name], axis=1, keepdims=True)
         norms[norms == 0] = 1  # Avoid division by zero
         emb_matrices[component_name] = emb_matrices[component_name] / norms
     
     # FIRST PASS: Compute similarity matrices for intrinsic node properties
-    logger.info("Computing component similarity matrices (first pass)")
     sim_matrices = {}
     for component_name, emb_matrix in emb_matrices.items():
-        logger.info(f"  Computing {component_name} similarity matrix")
         # Matrix multiplication gives all pairwise cosine similarities
         sim_matrices[component_name] = np.dot(emb_matrix, emb_matrix.T)
     
     # Combine similarity matrices with dynamic weights based on content
-    logger.info("Combining component similarities with dynamic weights and penalties")
-    
     # Create a matrix to track which components should contribute to each pair
     # Component contributes only if BOTH nodes have content for that component
     n_nodes = len(all_nodes)
@@ -368,7 +350,6 @@ def compute_pairwise_similarities(
             intrinsic_similarity_matrix[i, j] = additive_sim * structure_penalty
     
     # SECOND PASS: Update process node similarities based on connected nodes
-    logger.info("Computing process node similarities based on connected nodes (second pass)")
     final_similarity_matrix = intrinsic_similarity_matrix.copy()
     
     # Identify process nodes
@@ -377,9 +358,8 @@ def compute_pairwise_similarities(
         if node_type == 'process' and context_info:
             process_indices.append(idx)
     
-    logger.info(f"  Found {len(process_indices)} process nodes to update")
-    
     # For each pair of process nodes, compute similarity based on connected nodes
+    updated_count = 0
     for i in process_indices:
         model_idx_i, node_id_i, _, _, _, context_i, _ = all_nodes[i]
         
@@ -423,27 +403,77 @@ def compute_pairwise_similarities(
             if not connected_idx_j:
                 continue
             
-            # Compute average similarity between all pairs of connected nodes
-            context_similarities = []
-            for idx_i in connected_idx_i:
-                for idx_j in connected_idx_j:
-                    # Get similarity between connected nodes
-                    sim = intrinsic_similarity_matrix[idx_i, idx_j]
-                    context_similarities.append(sim)
+            # Compute similarity between connected nodes using optimal matching
+            # Strategy: Find the best one-to-one pairing between connected nodes
+            # that maximizes total similarity (greedy approach)
             
-            if context_similarities:
-                avg_context_sim = np.mean(context_similarities)
+            # Build similarity matrix for connected nodes
+            n_connected_i = len(connected_idx_i)
+            n_connected_j = len(connected_idx_j)
+            
+            # Handle empty sets: if either has no connected nodes, context similarity is 0
+            if n_connected_i == 0 and n_connected_j == 0:
+                # Both processes have no connected nodes - they're similar in this aspect
+                avg_context_sim = 1.0
+                n_matched = 0
+                n_total = 0
+            elif n_connected_i == 0 or n_connected_j == 0:
+                # One has connections, the other doesn't - very dissimilar
+                avg_context_sim = 0.0
+                n_matched = 0
+                n_total = max(n_connected_i, n_connected_j)
+            else:
+                # Both have connected nodes - compute optimal matching
+                context_similarities = []
                 
-                # Combine intrinsic similarity with context similarity
-                intrinsic_sim = intrinsic_similarity_matrix[i, j]
-                combined_sim = (intrinsic_sim + weight_process_context * avg_context_sim) / (1 + weight_process_context)
+                # Create pairwise similarity matrix for connected nodes
+                connected_sim_matrix = np.zeros((n_connected_i, n_connected_j))
+                for ii, idx_i in enumerate(connected_idx_i):
+                    for jj, idx_j in enumerate(connected_idx_j):
+                        sim = final_similarity_matrix[min(idx_i, idx_j), max(idx_i, idx_j)]
+                        connected_sim_matrix[ii, jj] = sim
                 
-                # Update both symmetric positions
-                final_similarity_matrix[i, j] = combined_sim
-                final_similarity_matrix[j, i] = combined_sim
+                # Greedy matching: repeatedly find the highest similarity pair
+                # and remove both nodes from consideration
+                used_i = set()
+                used_j = set()
+                matched_pairs = []
+                
+                # Sort all pairs by similarity (descending)
+                pairs = []
+                for ii in range(n_connected_i):
+                    for jj in range(n_connected_j):
+                        pairs.append((connected_sim_matrix[ii, jj], ii, jj))
+                pairs.sort(reverse=True)
+                
+                # Select pairs greedily (each node used only once)
+                for sim, ii, jj in pairs:
+                    if ii not in used_i and jj not in used_j:
+                        matched_pairs.append((ii, jj, sim))
+                        used_i.add(ii)
+                        used_j.add(jj)
+                        context_similarities.append(sim)
+                
+                # Compute average similarity considering unmatched nodes
+                n_matched = len(matched_pairs)
+                n_total = max(n_connected_i, n_connected_j)
+                n_unmatched = n_total - n_matched
+                
+                # Unmatched nodes contribute 0 similarity
+                # This penalizes processes with different numbers of connections
+                total_similarity = sum(context_similarities) + (n_unmatched * 0.0)
+                avg_context_sim = total_similarity / n_total if n_total > 0 else 0.0
+            
+            # Combine intrinsic similarity with context similarity
+            intrinsic_sim = intrinsic_similarity_matrix[i, j]
+            combined_sim = (intrinsic_sim + weight_process_context * avg_context_sim) / (1 + weight_process_context)
+            
+            # Update both symmetric positions
+            final_similarity_matrix[i, j] = combined_sim
+            final_similarity_matrix[j, i] = combined_sim
+            updated_count += 1
     
     # Generate edges from similarity matrix
-    logger.info("Generating similarity edges from matrix")
     edge_count = 0
     similarity_counts = {}
     
@@ -566,7 +596,3 @@ def compute_pairwise_similarities(
                 # Track statistics
                 model_pair = tuple(sorted([model_name_i, model_name_j]))
                 similarity_counts[model_pair] = similarity_counts.get(model_pair, 0) + 1
-    
-    logger.info(f"Generated {edge_count} similarity edges")
-    for model_pair, count in similarity_counts.items():
-        logger.info(f"  {model_pair[0]} <-> {model_pair[1]}: {count} edges")
