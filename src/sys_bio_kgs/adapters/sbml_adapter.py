@@ -28,7 +28,9 @@ class SBMLAdapter:
     # --------------------------------------------------------------
     # INITIALIZATION
     # --------------------------------------------------------------
-    def __init__(self, data_source: str | Path, **kwargs):
+    def __init__(self, data_source: str | Path,
+        annotations_as_node_properties: bool = True,
+        **kwargs):
         """
         Args:
             data_source: Path to the SBML file
@@ -36,6 +38,8 @@ class SBMLAdapter:
         """
         self.sbml_path = Path(data_source)
         self.config = kwargs
+
+        self.annotations_as_node_properties = annotations_as_node_properties
 
         logger.info(f"Loading SBML model with momapy: {self.sbml_path}")
 
@@ -66,52 +70,46 @@ class SBMLAdapter:
 
         # --- SBML compartments → compartment nodes ---
         for comp in self.model.compartments:
+            props = {}
             node_id = comp.id_
-            props: Dict[str, Any] = {
-                "name": comp.name or "",
-                "notes_base64": self._parse_notes(self.notes.get(comp, None)),
 
-
-
-
-
-            }
-            props.update(self._parse_annotations(self.annotations.get(comp, None)))
+            notes_base64 = self._parse_notes(self.notes.get(comp, None))
+            if notes_base64 is not None:
+                props["notes_base64"] = notes_base64
+            if comp.name is not None:
+                props["name"] = comp.name
+            if self.annotations_as_node_properties:
+                props.update(self._parse_annotations_to_node_properties(self.annotations.get(comp, None)))
 
             yield (node_id, "compartment", props)
 
         # --- SBML species → entity nodes ---
         for sp in self.model.species:
+            props = {}
             node_id = sp.id_
-            props = {
-                "name": sp.name or "",
-                "notes_base64": self._parse_notes(self.notes.get(sp, None)),
 
-
-
-
-
-            }
-            props.update(self._parse_annotations(self.annotations.get(sp, None)))
+            notes_base64 = self._parse_notes(self.notes.get(sp, None))
+            if notes_base64 is not None:
+                props["notes_base64"] = notes_base64
+            if sp.name is not None:
+                props["name"] = sp.name
+            if self.annotations_as_node_properties:
+                props.update(self._parse_annotations_to_node_properties(self.annotations.get(sp, None)))
 
             yield (node_id, "entity", props)
 
         # --- SBML reactions → process nodes ---
         for rx in self.model.reactions:
+            props = {}
             node_id = rx.id_
-            props = {
-                "name": rx.name or "",
-                "notes_base64": self._parse_notes(self.notes.get(rx, None)),
 
-
-
-
-
-
-
-            }
-            props.update(self._parse_annotations(self.annotations.get(rx, None)))
-
+            notes_base64 = self._parse_notes(self.notes.get(rx, None))
+            if notes_base64 is not None:
+                props["notes_base64"] = notes_base64
+            if rx.name is not None:
+                props["name"] = rx.name
+            if self.annotations_as_node_properties:
+                props.update(self._parse_annotations_to_node_properties(self.annotations.get(rx, None)))
             yield (node_id, "process", props)
 
     # --------------------------------------------------------------
@@ -131,19 +129,11 @@ class SBMLAdapter:
 
             # Reactants: species → reaction
             for sr in rx.reactants:
+                props = {}
                 species_id = sr.referred_species.id_
                 edge_id = f"{species_id}_reactant_{rx_id}"
-                props: Dict[str, Any] = {
-
-                    "stoichiometry": 1.0 if sr.stoichiometry is None else sr.stoichiometry
-
-
-
-
-
-
-
-                }
+                if sr.stoichiometry is not None:
+                    props["stoichiometry"] = sr.stoichiometry
                 yield (
                     edge_id,
                     species_id,
@@ -154,17 +144,11 @@ class SBMLAdapter:
 
             # Products: reaction → species (aligned with SBGN process → product)
             for sr in rx.products:
+                props = {}
                 species_id = sr.referred_species.id_
                 edge_id = f"{rx_id}_product_{species_id}"
-                props = {
-
-                    "stoichiometry": 1.0 if sr.stoichiometry is None else sr.stoichiometry
-
-
-
-
-
-                }
+                if sr.stoichiometry is not None:
+                    props["stoichiometry"] = sr.stoichiometry
                 yield (
                     edge_id,
                     rx_id,
@@ -177,13 +161,7 @@ class SBMLAdapter:
             for sr in rx.modifiers:
                 species_id = sr.referred_species.id_
                 edge_id = f"{species_id}_modifier_{rx_id}"
-                props = {
-
-
-
-
-
-                }  # can extend with SBO terms or roles later
+                props = {}  # can extend with SBO terms or roles later
                 yield (
                     edge_id,
                     species_id,
@@ -198,14 +176,7 @@ class SBMLAdapter:
                 species_id = sp.id_
                 comp_id = sp.compartment.id_
                 edge_id = f"{species_id}_contained_entity_{comp_id}"
-                props: Dict[str, Any] = {
-
-
-
-
-
-
-                }
+                props: Dict[str, Any] = {}
                 yield (
                     edge_id,
                     species_id,
@@ -225,9 +196,9 @@ class SBMLAdapter:
             "name": model.name,
             "notes_base64": self._parse_notes(self.notes.get(model, None)),
         }
-        properties.update(self._parse_annotations(self.annotations.get(model, None)))
+        if self.annotations_as_node_properties:
+            properties.update(self._parse_annotations_to_node_properties(self.annotations.get(model, None)))
         return properties
-
 
     # --------------------------------------------------------------
     # HELPERS
@@ -247,7 +218,7 @@ class SBMLAdapter:
         return note
 
     @staticmethod
-    def _parse_annotations(annotations: frozenset) -> Dict[str, Any]:
+    def _parse_annotations_to_node_properties(annotations: frozenset) -> Dict[str, Any]:
         """Parse annotations from SBML elements."""
         if annotations is None:
             return {}
@@ -259,8 +230,6 @@ class SBMLAdapter:
                 parsed_annotations[qualifier].append(resource)
 
         return parsed_annotations
-
-
 
     # --------------------------------------------------------------
     # METADATA

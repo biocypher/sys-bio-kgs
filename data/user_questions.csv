@@ -1,0 +1,12 @@
+question	answer	comment
+What is the scope of this knowledge graph? Give me a brief summary of the biology represented.		
+What are the inputs, regulators, and phenotypic outputs of this system?		
+What are key compartments in the knowledge graph, and how are they related?		
+Which are the most interconnected elements of the knowledge graph?		
+For [element] in the knowledge graph, what are downstream pathways/interactions/phenotypes?		
+For [elementA] and [elementB] in the knowledge graph, list all the reactions betweethem with directions (inhibiting/activating), kinetic parameters for modelling, relevant literature for the reactions, any gene expression data available.		
+In how many ways is [elementA] connected to [elementB]? If [elementA] is upregulated, what would be expected to happent to [elementB]? How many parameters, nodes, connections are in the model? 		
+Compare two pathways or models in the knowledge graph. What is the overlap of elements and interactions>		
+Which regulators influence [element]?		
+Generate lists of reactions/pathways involved in growth or defence from literature or public databases, analyse how growth and defence are interrelated and which trade-offs occur		out of scope
+patient matching or clinical trial matching		out of scope

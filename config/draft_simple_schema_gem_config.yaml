@@ -1,0 +1,117 @@
+# Schema Configuration for sys-bio-kgs
+# Using Systems Biology Ontology (SBO) as the head ontology
+# SBO URL: https://raw.githubusercontent.com/EBI-BioModels/SBO/refs/heads/master/SBO_OWL.owl
+
+# SBGN and SBML biochemical reaction components mapped to SBO classes
+# Using SBO classes directly where they exist (no is_a if class exists in SBO)
+
+
+# ------------------------------ -NOTES -----------------------------------
+# Based on this info
+# https://github.com/adrienrougny/momapy/blob/biohackathon_2025/scripts/schema_helper.py
+
+# so that all children have name, sbo, notes, annotations
+occurring entity representation: # SBO_0000231: occurring entity representation
+  represented_as: node
+  properties:
+    name: string
+    sbo: string
+    notes: string
+    annotations: list[string]
+
+model:
+  is_a: occurring entity representation # SBO_0000231: occurring entity representation
+  represented_as: node
+  input_label: model
+  inherit_properties: true
+  properties:
+    isDescribedBy: list[string]
+    #num_compartments: int   # len(model.compartments)  # worth adding?
+    #num_species: int        # len(model.species)
+    #num_reactions: int      # len(model.reactions)
+    #num_genes: int          # len(model.genes)
+    #annotations: dict       #  trow all the result.annotations?
+
+
+
+# SBML - species, SBGN - entity pool
+physical entity representation: # SBO_0000236: physical entity representation
+  represented_as: node
+  input_label: entity
+  properties:
+    name: string
+
+# SBML - reaction, SBGN - process
+process: # SBO_0000375: process
+  represented_as: node
+  input_label: process
+  properties:
+    name: string  # or id maybe/both?
+    #reversible: bool               # reaction.reversible
+    #lower_flux_bound: float        # reaction.lower_flux_bound
+    #upper_flux_bound: float        # reaction.upper_flux_bound
+    #gpr: string                    # reaction.safe_gpr_string()
+
+# SBML - compartment, SBGN - compartment
+physical compartment: # SBO_0000290: compartment
+  represented_as: node
+  input_label: compartment
+  properties:
+    name: string
+
+# SBML - speciesReference/reactant, SBGN - consumption arc
+reactant: # SBO_0000010: reactant
+  represented_as: edge
+  input_label: reactant
+  properties:
+    stoichiometry: float
+
+# SBML - speciesReference/product, SBGN - production arc
+product: # SBO_0000011: product
+  represented_as: edge
+  input_label: product
+  properties:
+    stoichiometry: float
+
+# SBML - modifierSpeciesReference, SBGN - modifier arc
+modifier: # SBO_0000019: modifier
+  represented_as: edge
+  input_label: modifier
+  properties:
+
+# SBML and SBGN: localisation in a compartment
+contained entity: # SBO_0000664
+  represented_as: edge
+  input_label: contained entity
+  properties:
+
+# --------------------------- GEM Stuff ---------------------------
+
+gene:                                         # not an SBO class, inherits root
+  is_a: occurring entity representation
+  represented_as: node
+  input_label: gene
+  inherit_properties: true
+  properties:
+    id: string                     # gene.id_   # meta_id???
+
+
+# GPR association   Gene ↔ Reaction
+
+gene-reaction association:
+  represented_as: edge
+  input_label: gene-reaction
+  properties:
+    rule_fragment: string          # add this or just connect gene to reaction?
+                                   # gene.associated_reactions(model)?
+
+# Objective Function
+
+flux_objective:
+  is_a: occurring entity representation
+  represented_as: node
+  input_label: flux_objective
+  inherit_properties: true
+  properties:
+    id: string                     # model.safe_objective_id()
+    type: string                   # maximize/minimize
