@@ -3,6 +3,8 @@ services:
   build:
     image: biocypher/base:1.2.0
     container_name: build
+    environment:
+      - UV_EXTRA_INDEX_URL=https://download.pytorch.org/whl/cpu
     volumes:
       - biocypher_neo4j_volume:/usr/app/data
       - .:/src/
