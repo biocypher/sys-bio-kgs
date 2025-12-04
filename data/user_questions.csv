@@ -5,7 +5,7 @@ content	What are key compartments in the knowledge graph, and how are they relat
 content	Describe [element]. For this [element] in the knowledge graph, what are downstream pathways/interactions/phenotypes?	
 content	Which regulators influence [element]?	
 content	List all [elements of types A and B] involved in reactions in [compartment]	
-conetnt/computational	For [elementA] and [elementB] in the knowledge graph, list all the reactions betweethem with directions (inhibiting/activating), kinetic parameters for modelling, relevant literature for the reactions, any gene expression data available.	
+content/computational	For [elementA] and [elementB] in the knowledge graph, list all the reactions betweethem with directions (inhibiting/activating), kinetic parameters for modelling, relevant literature for the reactions, any gene expression data available.	
 content/computational	In how many ways is [elementA] connected to [elementB]? If [elementA] is upregulated, what would be expected to happent to [elementB]? How many parameters, nodes, connections are in the model? 	
 content/computational	Which are the most interconnected elements of the knowledge graph?	
 content/computational	Compare two pathways or models in the knowledge graph. What is the overlap of elements and interactions?	
