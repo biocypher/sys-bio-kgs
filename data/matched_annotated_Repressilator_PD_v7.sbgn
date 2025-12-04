@@ -73,7 +73,7 @@
           </rdf:RDF>
         </annotation>
       </extension>
-      <label text="Lacl protein"/>
+      <label text="LacI protein"/>
       <bbox x="342" y="20.5" w="72" h="45"/>
     </glyph>
     <glyph id="glyph30" class="source and sink">
@@ -236,7 +236,7 @@
           </rdf:RDF>
         </annotation>
       </extension>
-      <label text="Lacl mRNA"/>
+      <label text="LacI mRNA"/>
       <bbox x="437" y="120.5" w="72" h="45"/>
       <glyph id="glyph20a" class="unit of information">
         <label text="ct:mRNA"/>
