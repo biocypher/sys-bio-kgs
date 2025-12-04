@@ -1,12 +1,21 @@
-question	answer	comment
-What is the scope of this knowledge graph? Give me a brief summary of the biology represented.		
-What are the inputs, regulators, and phenotypic outputs of this system?		
-What are key compartments in the knowledge graph, and how are they related?		
-Which are the most interconnected elements of the knowledge graph?		
-For [element] in the knowledge graph, what are downstream pathways/interactions/phenotypes?		
-For [elementA] and [elementB] in the knowledge graph, list all the reactions betweethem with directions (inhibiting/activating), kinetic parameters for modelling, relevant literature for the reactions, any gene expression data available.		
-In how many ways is [elementA] connected to [elementB]? If [elementA] is upregulated, what would be expected to happent to [elementB]? How many parameters, nodes, connections are in the model? 		
-Compare two pathways or models in the knowledge graph. What is the overlap of elements and interactions>		
-Which regulators influence [element]?		
-Generate lists of reactions/pathways involved in growth or defence from literature or public databases, analyse how growth and defence are interrelated and which trade-offs occur		out of scope
-patient matching or clinical trial matching		out of scope
+type	question	answer
+content	What is the scope of this knowledge graph? Give me a brief summary of the biology represented. How specific is it for [disease]?	
+content	What are the inputs, regulators, and phenotypic outputs of this system?	
+content	What are key compartments in the knowledge graph, and how are they related?	
+content	Describe [element]. For this [element] in the knowledge graph, what are downstream pathways/interactions/phenotypes?	
+content	Which regulators influence [element]?	
+content	List all [elements of types A and B] involved in reactions in [compartment]	
+conetnt/computational	For [elementA] and [elementB] in the knowledge graph, list all the reactions betweethem with directions (inhibiting/activating), kinetic parameters for modelling, relevant literature for the reactions, any gene expression data available.	
+content/computational	In how many ways is [elementA] connected to [elementB]? If [elementA] is upregulated, what would be expected to happent to [elementB]? How many parameters, nodes, connections are in the model? 	
+content/computational	Which are the most interconnected elements of the knowledge graph?	
+content/computational	Compare two pathways or models in the knowledge graph. What is the overlap of elements and interactions?	
+computational	Is the [knowledge graph] suitable for modelling?	
+disease	Does the knowledge graph represent processes in homeostasis or in a pathological state?	
+disease	Explain [element] involvement in [pathway] and its role in [disease]. What happens when [element] is dysfunctional?	
+disease	How does the [concept/environmental factor/group elements/pathway] contribute to [disease]?	
+disease	What is the initial event for [disaese] and its outcome/endpoint?	
+out of scope	Generate lists of reactions/pathways involved in growth or defence from literature or public databases, analyse how growth and defence are interrelated and which trade-offs occur	
+out of scope	patient matching or clinical trial matching	
+out of scope	Can you tell me more about which other cells induce/activate [cell]	
+out of scope	Which components may be missing from the [pathway] based on current literature?	
+out of scope	Which  components/submaps are the most promising targets for interventions aimed at alleviating [disease] symptoms?	
