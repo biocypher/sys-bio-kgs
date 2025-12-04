@@ -223,12 +223,17 @@ class SBMLAdapter:
     # HELPERS
     # --------------------------------------------------------------
 
-    def _make_incidental_edge(self, target_id: str, source_id: str, input_label: str, props: Dict[str, Any] = None):
+    def _make_incidental_edge(self, source_id: str, target_id: str, input_label: str, props: Dict[str, Any] = None):
         """Create incidental edges that are not part of the main model structure."""
         edge_id = f"{source_id}_{input_label.replace(' ', '_')}_{target_id}"
 
         if props is None:
             props = {}
+        
+        # Add label property for BioCypher CSV export (matches SBGN adapter pattern)
+        # Convert "entity_of" -> "entity of model", "process_of" -> "process of model", etc.
+        label_text = input_label.replace("_", " ") + " model"
+        props["label"] = label_text
 
         self.incidental_edges[edge_id] = (
             edge_id,
