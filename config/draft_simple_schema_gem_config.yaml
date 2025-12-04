@@ -6,112 +6,371 @@
 # Using SBO classes directly where they exist (no is_a if class exists in SBO)
 
 
-# ------------------------------ -NOTES -----------------------------------
-# Based on this info
-# https://github.com/adrienrougny/momapy/blob/biohackathon_2025/scripts/schema_helper.py
-
 # so that all children have name, sbo, notes, annotations
 occurring entity representation: # SBO_0000231: occurring entity representation
   represented_as: node
   properties:
     name: string
     sbo: string
+
+    notes_base64: string
     notes: string
-    annotations: list[string]
+
+    # qualifierss from momapy
+    encodes: list[string]
+    hasPart: list[string]
+    hasProperty: list[string]
+    hasVersion: list[string]
+    is: list[string]
+    isDescribedBy: list[string]
+    isEncodedBy: list[string]
+    isHomologTo: list[string]
+    isPartOf: list[string]
+    isPropertyOf: list[string]
+    isVersionOf: list[string]
+    occursIn: list[string]
+    hasTaxon: list[string]
+    hasInstance: list[string]
+    is: list[string]
+    isDerivedFrom: list[string]
+    isDescribedBy: list[string]
+    isInstanceOf: list[string]
 
 model:
   is_a: occurring entity representation # SBO_0000231: occurring entity representation
   represented_as: node
   input_label: model
-  inherit_properties: true
+
   properties:
+    name: string
+    sbo: string
+
+    notes_base64: string
+    notes: string
+
+    # qualifierss from momapy
+    encodes: list[string]
+    hasPart: list[string]
+    hasProperty: list[string]
+    hasVersion: list[string]
+    is: list[string]
     isDescribedBy: list[string]
-    #num_compartments: int   # len(model.compartments)  # worth adding?
-    #num_species: int        # len(model.species)
-    #num_reactions: int      # len(model.reactions)
-    #num_genes: int          # len(model.genes)
-    #annotations: dict       #  trow all the result.annotations?
+    isEncodedBy: list[string]
+    isHomologTo: list[string]
+    isPartOf: list[string]
+    isPropertyOf: list[string]
+    isVersionOf: list[string]
+    occursIn: list[string]
+    hasTaxon: list[string]
+    hasInstance: list[string]
+    is: list[string]
+    isDerivedFrom: list[string]
+    isDescribedBy: list[string]
+    isInstanceOf: list[string]
 
-
+    # OPTIONAL (add later if needed)
+    #num_compartments: int
+    #num_species: int
+    #num_reactions: int
+    #num_genes: int
 
 # SBML - species, SBGN - entity pool
 physical entity representation: # SBO_0000236: physical entity representation
   represented_as: node
+  inherit_properties: true
   input_label: entity
+
   properties:
     name: string
+    sbo: string
+
+    notes_base64: string
+    notes: string
+
+    # qualifierss from momapy
+    encodes: list[string]
+    hasPart: list[string]
+    hasProperty: list[string]
+    hasVersion: list[string]
+    is: list[string]
+    isDescribedBy: list[string]
+    isEncodedBy: list[string]
+    isHomologTo: list[string]
+    isPartOf: list[string]
+    isPropertyOf: list[string]
+    isVersionOf: list[string]
+    occursIn: list[string]
+    hasTaxon: list[string]
+    hasInstance: list[string]
+    is: list[string]
+    isDerivedFrom: list[string]
+    isDescribedBy: list[string]
+    isInstanceOf: list[string]
 
 # SBML - reaction, SBGN - process
 process: # SBO_0000375: process
   represented_as: node
+  inherit_properties: true
   input_label: process
+
   properties:
-    name: string  # or id maybe/both?
+    name: string
+    sbo: string
+
+    notes_base64: string
+    notes: string
+
+    # qualifierss from momapy
+    encodes: list[string]
+    hasPart: list[string]
+    hasProperty: list[string]
+    hasVersion: list[string]
+    is: list[string]
+    isDescribedBy: list[string]
+    isEncodedBy: list[string]
+    isHomologTo: list[string]
+    isPartOf: list[string]
+    isPropertyOf: list[string]
+    isVersionOf: list[string]
+    occursIn: list[string]
+    hasTaxon: list[string]
+    hasInstance: list[string]
+    is: list[string]
+    isDerivedFrom: list[string]
+    isDescribedBy: list[string]
+    isInstanceOf: list[string]
+
+    # OPTIONAL (add later if needed)
     #reversible: bool               # reaction.reversible
     #lower_flux_bound: float        # reaction.lower_flux_bound
     #upper_flux_bound: float        # reaction.upper_flux_bound
     #gpr: string                    # reaction.safe_gpr_string()
 
+
 # SBML - compartment, SBGN - compartment
 physical compartment: # SBO_0000290: compartment
   represented_as: node
+  inherit_properties: true
   input_label: compartment
+
   properties:
     name: string
+    sbo: string
+
+    notes_base64: string
+    notes: string
+
+    # qualifierss from momapy
+    encodes: list[string]
+    hasPart: list[string]
+    hasProperty: list[string]
+    hasVersion: list[string]
+    is: list[string]
+    isDescribedBy: list[string]
+    isEncodedBy: list[string]
+    isHomologTo: list[string]
+    isPartOf: list[string]
+    isPropertyOf: list[string]
+    isVersionOf: list[string]
+    occursIn: list[string]
+    hasTaxon: list[string]
+    hasInstance: list[string]
+    is: list[string]
+    isDerivedFrom: list[string]
+    isDescribedBy: list[string]
+    isInstanceOf: list[string]
 
 # SBML - speciesReference/reactant, SBGN - consumption arc
 reactant: # SBO_0000010: reactant
   represented_as: edge
+  inherit_properties: true
   input_label: reactant
   properties:
     stoichiometry: float
 
+    name: string
+    sbo: string
+
+    notes_base64: string
+    notes: string
+
+    # qualifierss from momapy
+    encodes: list[string]
+    hasPart: list[string]
+    hasProperty: list[string]
+    hasVersion: list[string]
+    is: list[string]
+    isDescribedBy: list[string]
+    isEncodedBy: list[string]
+    isHomologTo: list[string]
+    isPartOf: list[string]
+    isPropertyOf: list[string]
+    isVersionOf: list[string]
+    occursIn: list[string]
+    hasTaxon: list[string]
+    hasInstance: list[string]
+    is: list[string]
+    isDerivedFrom: list[string]
+    isDescribedBy: list[string]
+    isInstanceOf: list[string]
+
 # SBML - speciesReference/product, SBGN - production arc
 product: # SBO_0000011: product
   represented_as: edge
+  inherit_properties: true
   input_label: product
   properties:
     stoichiometry: float
 
+    name: string
+    sbo: string
+
+    notes_base64: string
+    notes: string
+
+    # qualifierss from momapy
+    encodes: list[string]
+    hasPart: list[string]
+    hasProperty: list[string]
+    hasVersion: list[string]
+    is: list[string]
+    isDescribedBy: list[string]
+    isEncodedBy: list[string]
+    isHomologTo: list[string]
+    isPartOf: list[string]
+    isPropertyOf: list[string]
+    isVersionOf: list[string]
+    occursIn: list[string]
+    hasTaxon: list[string]
+    hasInstance: list[string]
+    is: list[string]
+    isDerivedFrom: list[string]
+    isDescribedBy: list[string]
+    isInstanceOf: list[string]
+
+
 # SBML - modifierSpeciesReference, SBGN - modifier arc
 modifier: # SBO_0000019: modifier
   represented_as: edge
+  inherit_properties: true
   input_label: modifier
+
   properties:
+    name: string
+    sbo: string
+
+    notes_base64: string
+    notes: string
+
+    # qualifierss from momapy
+    encodes: list[string]
+    hasPart: list[string]
+    hasProperty: list[string]
+    hasVersion: list[string]
+    is: list[string]
+    isDescribedBy: list[string]
+    isEncodedBy: list[string]
+    isHomologTo: list[string]
+    isPartOf: list[string]
+    isPropertyOf: list[string]
+    isVersionOf: list[string]
+    occursIn: list[string]
+    hasTaxon: list[string]
+    hasInstance: list[string]
+    is: list[string]
+    isDerivedFrom: list[string]
+    isDescribedBy: list[string]
+    isInstanceOf: list[string]
+
 
 # SBML and SBGN: localisation in a compartment
 contained entity: # SBO_0000664
   represented_as: edge
+  inherit_properties: true
   input_label: contained entity
+
   properties:
+    name: string
+    sbo: string
+    notes_base64: string
+    notes: string
+
+    # qualifierss from momapy
+    encodes: list[string]
+    hasPart: list[string]
+    hasProperty: list[string]
+    hasVersion: list[string]
+    is: list[string]
+    isDescribedBy: list[string]
+    isEncodedBy: list[string]
+    isHomologTo: list[string]
+    isPartOf: list[string]
+    isPropertyOf: list[string]
+    isVersionOf: list[string]
+    occursIn: list[string]
+    hasTaxon: list[string]
+    hasInstance: list[string]
+    is: list[string]
+    isDerivedFrom: list[string]
+    isDescribedBy: list[string]
+    isInstanceOf: list[string]
+
+# edges from model to its components
+is a entity of:
+  is_a: participant # SBO_0000235
+  represented_as: edge
+  input_label: entity_of
+  target: model
+  source: physical entity representation
+
+is a process of:
+  is_a: participant # SBO_0000235
+  represented_as: edge
+  input_label: process_of
+  target: model
+  source: process
+
+is a compartment of:
+  is_a: participant # SBO_0000235
+  represented_as: edge
+  input_label: compartment_of
+  target: model
+  source: physical compartment
 
 # --------------------------- GEM Stuff ---------------------------
 
-gene:                                         # not an SBO class, inherits root
-  is_a: occurring entity representation
+gene: # SBO_0000243: gene
   represented_as: node
   input_label: gene
-  inherit_properties: true
   properties:
-    id: string                     # gene.id_   # meta_id???
+    name: string
+    sbo: string
 
+    notes_base64: string
+    notes: string
 
-# GPR association   Gene ↔ Reaction
+    # qualifierss from momapy
+    encodes: list[string]
+    hasPart: list[string]
+    hasProperty: list[string]
+    hasVersion: list[string]
+    is: list[string]
+    isDescribedBy: list[string]
+    isEncodedBy: list[string]
+    isHomologTo: list[string]
+    isPartOf: list[string]
+    isPropertyOf: list[string]
+    isVersionOf: list[string]
+    occursIn: list[string]
+    hasTaxon: list[string]
+    hasInstance: list[string]
+    is: list[string]
+    isDerivedFrom: list[string]
+    isDescribedBy: list[string]
+    isInstanceOf: list[string]
 
 gene-reaction association:
   represented_as: edge
   input_label: gene-reaction
   properties:
-    rule_fragment: string          # add this or just connect gene to reaction?
-                                   # gene.associated_reactions(model)?
-
-# Objective Function
-
-flux_objective:
-  is_a: occurring entity representation
-  represented_as: node
-  input_label: flux_objective
-  inherit_properties: true
-  properties:
-    id: string                     # model.safe_objective_id()
-    type: string                   # maximize/minimize
+    rule_fragment: string # gpr rule
