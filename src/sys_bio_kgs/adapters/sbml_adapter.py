@@ -57,38 +57,48 @@ class SBMLAdapter:
             entity / process / compartment only have a `name` property.
         """
 
+        # --- SBML model → model node ---
+        yield (self.model.id_, "model", self.get_model_properties())
+
+
         # --- SBML compartments → compartment nodes ---
         for comp in self.model.compartments:
             node_id = comp.id_
             props: Dict[str, Any] = {
-                "name": comp.name or ""
+                "name": comp.name or "",
+                "notes_base64": self._parse_notes(self.notes.get(comp, None)),
 
 
 
 
 
             }
+            props.update(self._parse_annotations(self.annotations.get(comp, None)))
+
             yield (node_id, "compartment", props)
 
         # --- SBML species → entity nodes ---
         for sp in self.model.species:
             node_id = sp.id_
             props = {
-                "name": sp.name or ""
-
+                "name": sp.name or "",
+                "notes_base64": self._parse_notes(self.notes.get(sp, None)),
 
 
 
 
 
             }
+            props.update(self._parse_annotations(self.annotations.get(sp, None)))
+
             yield (node_id, "entity", props)
 
         # --- SBML reactions → process nodes ---
         for rx in self.model.reactions:
             node_id = rx.id_
             props = {
-                "name": rx.name or ""
+                "name": rx.name or "",
+                "notes_base64": self._parse_notes(self.notes.get(rx, None)),
 
 
 
@@ -97,6 +107,8 @@ class SBMLAdapter:
 
 
             }
+            props.update(self._parse_annotations(self.annotations.get(rx, None)))
+
             yield (node_id, "process", props)
 
     # --------------------------------------------------------------
@@ -198,6 +210,18 @@ class SBMLAdapter:
                     "contained entity",
                     props,
                 )
+
+
+    # --------------------------------------------------------------
+    # Node specific properties
+    # --------------------------------------------------------------
+
+    def get_model_properties(self):
+        model = self.model
+        properties = {
+            "name": model.name,
+        }
+        return properties
 
     # --------------------------------------------------------------
     # METADATA
