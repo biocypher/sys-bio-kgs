@@ -305,63 +305,59 @@ contained entity: # SBO_0000664
 
 # edges from model to its components
 is entity of:
-  is_a: participant # SBO_0000235
+  is_a: participant
   represented_as: edge
   input_label: entity_of
   target: model
   source: physical entity representation
 
 is process of:
-  is_a: participant # SBO_0000235
+  is_a: participant
   represented_as: edge
   input_label: process_of
   target: model
   source: process
 
 is compartment of:
-  is_a: participant # SBO_0000235
+  is_a: participant
   represented_as: edge
   input_label: compartment_of
   target: model
   source: physical compartment
 
-empty set:
+empty set: # SBO_0000355
   is_a: physical entity representation
   inherit_properties: true
   represented_as: node
   input_label: empty set
 
-macromolecule:
+macromolecule: # SBO_0000245
   is_a: physical entity representation
   inherit_properties: true
   represented_as: node
   input_label: macromolecule
 
-information macromolecule:
-  is_a: macromolecule
+information macromolecule: # SBO_0000246
   inherit_properties: true
   represented_as: node
   input_label: information macromolecule
 
-inhibition:
-  is_a: modifier
+inhibition: # SBO_0000169
   inherit_properties: true
   represented_as: edge
   input_label: inhibition
 
-necessary stimulation:
-  is_a: modifier
+necessary stimulation: # SBO_0000171
   inherit_properties: true
   represented_as: edge
   input_label: necessary stimulation
 
-relationship:
+catalysis: # SBO_0000176
   inherit_properties: true
   represented_as: edge
-  input_label: relationship 
+  input_label: catalysis
 
 similarity:
   is_a: relationship
-  inherit_properties: true
   represented_as: edge
   input_label: similarity

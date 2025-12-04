@@ -154,11 +154,11 @@ def compute_pairwise_similarities(
     embedding_model: str = 'all-mpnet-base-v2',
     similarity_threshold: float = 0.0,
     top_k: int = None,
-    weight_names: float = 5.0,
+    weight_names: float = 10.0,
     weight_annotations: float = 1.0,
     weight_db_ids: float = 10,
-    weight_process_context: float = 5.0,
-    penalty_structure: float = 2.0
+    weight_process_context: float = 10.0,
+    penalty_structure: float = 1.0
 ) -> Iterator[Tuple[str, str, str, str, Dict[str, Any]]]:
     """
     Compare nodes from multiple iterators and generate similarity edges.

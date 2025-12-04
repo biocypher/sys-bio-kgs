@@ -202,10 +202,10 @@ class MoMaPySBGNAdapter:
         self.nodes["model"] = ("model", "model", {"source": self.data_source, "label": "model", "sbo_term": "SBO_0000231"}, "model")  # SBO_0000411: model
 
         for compartment in compartments:
-            self.nodes[compartment] = (compartment.id_, "compartment", {"label": compartment.label}, "compartment")
+            self.nodes[compartment] = (compartment.id_, "physical compartment", {"label": compartment.label}, "compartment")
 
         if self.add_default_compartments:
-            self.nodes["default_compartment"] = ("default_compartment", "compartment", {"label": "default"}, "compartment")
+            self.nodes["default_compartment"] = ("default_compartment", "physical compartment", {"label": "default"}, "compartment")
 
         for glyph in glyphs:            
             # momapy object structure
