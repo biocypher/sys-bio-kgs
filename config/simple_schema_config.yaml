@@ -6,8 +6,25 @@
 # Using SBO classes directly where they exist (no is_a if class exists in SBO)
 
 
+# so that all children have name, sbo, notes, annotations
+occurring entity representation: # SBO_0000231: occurring entity representation
+  represented_as: node
+  properties:
+    name: string
+    sbo: string
+    notes: string
+    annotations: list[string]
+
+model:
+  is_a: occurring entity representation # SBO_0000231: occurring entity representation
+  represented_as: node
+  input_label: model
+  inherit_properties: true
+  properties:
+    isDescribedBy: list[string]
+
 # SBML - species, SBGN - entity pool
-physical entity:
+physical entity representation: # SBO_0000236: physical entity representation
   represented_as: node
   input_label: entity
   properties:
