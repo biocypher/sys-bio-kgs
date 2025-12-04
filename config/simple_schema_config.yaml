@@ -302,3 +302,26 @@ contained entity: # SBO_0000664
     isDerivedFrom: list[string]
     isDescribedBy: list[string]
     isInstanceOf: list[string]
+
+# edges from model to its components
+is a entity of:
+  is_a: participant # SBO_0000235
+  represented_as: edge
+  input_label: entity_of
+  target: model
+  source: physical entity representation
+
+is a process of:
+  is_a: participant # SBO_0000235
+  represented_as: edge
+  input_label: process_of
+  target: model
+  source: process
+
+is a compartment of:
+  is_a: participant # SBO_0000235
+  represented_as: edge
+  input_label: compartment_of
+  target: model
+  source: physical compartment
+

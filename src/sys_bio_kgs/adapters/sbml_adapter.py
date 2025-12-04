@@ -48,6 +48,10 @@ class SBMLAdapter:
         self.annotations = result.annotations
         self.notes = result.notes
 
+        # hold edges that are not part of the main model structure
+        # and are generated while processing nodes
+        self.incidental_edges = {}
+
         logger.info("SBML model loaded successfully")
 
     # --------------------------------------------------------------
@@ -65,7 +69,8 @@ class SBMLAdapter:
         """
 
         # --- SBML model → model node ---
-        yield (self.model.id_, "model", self.get_model_properties())
+        model_id = self.model.id_
+        yield (model_id, "model", self.get_model_properties())
 
 
         # --- SBML compartments → compartment nodes ---
@@ -80,6 +85,9 @@ class SBMLAdapter:
                 props["name"] = comp.name
             if self.annotations_as_node_properties:
                 props.update(self._parse_annotations_to_node_properties(self.annotations.get(comp, None)))
+
+            # connect model → compartment
+            self._make_incidental_edge(node_id, model_id, "compartment_of")
 
             yield (node_id, "compartment", props)
 
@@ -96,6 +104,9 @@ class SBMLAdapter:
             if self.annotations_as_node_properties:
                 props.update(self._parse_annotations_to_node_properties(self.annotations.get(sp, None)))
 
+            # connect model → species
+            self._make_incidental_edge(node_id, model_id, "entity_of")
+
             yield (node_id, "entity", props)
 
         # --- SBML reactions → process nodes ---
@@ -110,6 +121,10 @@ class SBMLAdapter:
                 props["name"] = rx.name
             if self.annotations_as_node_properties:
                 props.update(self._parse_annotations_to_node_properties(self.annotations.get(rx, None)))
+
+            # connect model → reaction
+            self._make_incidental_edge(node_id, model_id, "process_of")
+
             yield (node_id, "process", props)
 
     # --------------------------------------------------------------
@@ -122,6 +137,10 @@ class SBMLAdapter:
         Yields:
             (edge_id, source_id, target_id, input_label, properties_dict)
         """
+
+        # --- Incidental edges generated during node processing ---
+        for edge in self.incidental_edges.values():
+            yield edge
 
         # --- Reactant / Product / Modifier edges (species ↔ reaction) ---
         for rx in self.model.reactions:
@@ -203,6 +222,21 @@ class SBMLAdapter:
     # --------------------------------------------------------------
     # HELPERS
     # --------------------------------------------------------------
+
+    def _make_incidental_edge(self, target_id: str, source_id: str, input_label: str, props: Dict[str, Any] = None):
+        """Create incidental edges that are not part of the main model structure."""
+        edge_id = f"{source_id}_{input_label.replace(' ', '_')}_{target_id}"
+
+        if props is None:
+            props = {}
+
+        self.incidental_edges[edge_id] = (
+            edge_id,
+            source_id,
+            target_id,
+            input_label,
+            props,
+        )
 
     @staticmethod
     def _parse_notes(notes: frozenset) -> str:
