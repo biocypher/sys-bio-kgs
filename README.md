@@ -54,7 +54,7 @@ Resulting round trip, showing the imported SBML and the exported SBML side-by-si
 Pairwise comparison of annotated SBGN and SBML files [sbgn_sbml_identifiers_match.py](scripts/sbgn_sbml_matching)  
 Results on the comparison between SBML and SBGN model files seen in Neo4j:
 <p align="center">
-<img width="500" height="680" alt="image" src="https://github.com/user-attachments/assets/ef56f88f-3cf4-49a9-87d8-5135c4116934" />
+<img width="800" alt="image" src="https://github.com/user-attachments/assets/ef56f88f-3cf4-49a9-87d8-5135c4116934" />
 </p>
 
 8. **Benchmarking** — defining and evaluating the functions we expect the system to support
