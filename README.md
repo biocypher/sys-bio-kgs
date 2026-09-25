@@ -59,7 +59,7 @@ Results on the comparison between SBML and SBGN model files seen in Neo4j:
 
 8. **Benchmarking** — defining and evaluating the functions we expect the system to support
 This was composed of two parts:  
-  - User question curation: To test KG utility, we compiled a list of natural lanuguage questions from a survey sent to potential users. The questions are related to model content and structur. [data/user_questions.csv](data/user_questions.csv)  
+  - User question curation: To test KG utility, we compiled a list of natural lanuguage questions from a survey sent to potential users. The questions are related to model content and structur. [data/user_questions.csv](data/user_questions.csv), benchmarked against the graph with BioChatter in [benchmark](benchmark)  
   - Model curation: To develop test suites on the framework, models from Reactome and BioMoldes where compiles, and matching SBGN/SBML models annotated. [data/](data/)
 
 ## Repository overview
@@ -180,6 +180,8 @@ model (default `gemini-flash-lite-latest`, which has usable free-tier rate
 limits). The image only accepts keys for a fixed list of older Gemini models;
 [docker/biochatter/sitecustomize.py](docker/biochatter/sitecustomize.py) adds
 the configured model to that list at start-up.
+
+To measure how well questions are answered, see [benchmark](benchmark).
 
 ## Testing
 

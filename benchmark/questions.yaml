@@ -1,0 +1,253 @@
+# Benchmark questions for the SBML repressilator graph (create_knowledge_graph_sbml.py),
+# derived from the user survey in data/user_questions.csv (source: row number there).
+#
+# Two sets:
+# - in_scope: answerable from the graph; with a reference Cypher query and the
+#   expected values used for scoring (see README.md).
+# - later: not answerable yet; with the reason (missing data, other model, out of scope).
+#
+# Placeholders from the survey are filled in for the repressilator, e.g.
+# [element] = LacI protein, [compartment] = cell.
+#
+# expected.values: values that must all appear in the query result; a nested
+# list means "any of" (e.g. [6, 7]). expected.rows: required number of result
+# rows (null: not checked). parts_of_query: regular expressions in the style of
+# the BioChatter benchmark (reported, not used for the main score).
+
+in_scope:
+  - case: model_description
+    source: 1
+    category: content
+    prompt: >-
+      What model does this knowledge graph describe? Give its name, the organism
+      it occurs in and the publication that describes it.
+    cypher: >-
+      MATCH (m:Model) RETURN m.name, m.occursIn, m.isDescribedBy
+    expected:
+      values:
+        - Elowitz2000 - Repressilator
+        - http://identifiers.org/taxonomy:562
+        - http://identifiers.org/pubmed:10659856
+      rows: 1
+    parts_of_query: ["MATCH", "RETURN", ":Model"]
+
+  - case: transcription_regulators
+    source: 2
+    category: content
+    prompt: Which species regulate the transcription reactions in this model?
+    cypher: >-
+      MATCH (s:PhysicalEntityRepresentation)-[:Modifier]->(p:Process)
+      WHERE p.name STARTS WITH 'transcription' RETURN DISTINCT s.name
+    expected:
+      values: [LacI protein, TetR protein, cI protein]
+      rows: 3
+    parts_of_query: ["MATCH", "RETURN", ":Modifier", ":Process"]
+
+  - case: compartments
+    source: 3
+    category: content
+    prompt: >-
+      What are the compartments in the knowledge graph, and which species do
+      they contain?
+    cypher: >-
+      MATCH (s:PhysicalEntityRepresentation)-[:ContainedEntity]->(c:PhysicalCompartment)
+      RETURN c.id, collect(s.name)
+    expected:
+      values: [cell, LacI protein, TetR protein, cI protein, LacI mRNA, TetR mRNA, cI mRNA]
+      rows: null
+    parts_of_query: ["MATCH", "RETURN", ":ContainedEntity", ":PhysicalCompartment"]
+
+  - case: describe_element
+    source: 4
+    category: content
+    prompt: >-
+      Describe LacI protein: which reactions does it take part in, and in which
+      role (reactant, product or modifier)?
+    cypher: >-
+      MATCH (s {name: 'LacI protein'})-[r:Reactant|Modifier]->(p:Process) RETURN p.name, type(r)
+      UNION
+      MATCH (p:Process)-[r:Product]->(s {name: 'LacI protein'}) RETURN p.name, type(r)
+    expected:
+      values: [translation of LacI, degradation of LacI, transcription of TetR]
+      rows: 3
+    parts_of_query: ["MATCH", "RETURN", "LacI protein", ":Process"]
+
+  - case: element_regulators
+    source: 5
+    category: content
+    prompt: Which regulators influence the production of TetR mRNA?
+    cypher: >-
+      MATCH (reg)-[:Modifier]->(p:Process)-[:Product]->(s {name: 'TetR mRNA'})
+      RETURN DISTINCT reg.name
+    expected:
+      values: [LacI protein]
+      rows: 1
+    parts_of_query: ["MATCH", "RETURN", ":Modifier", ":Product", "TetR mRNA"]
+
+  - case: elements_in_compartment
+    source: 6
+    category: content
+    prompt: >-
+      List all proteins and mRNAs in the compartment cell that are involved in
+      reactions.
+    cypher: >-
+      MATCH (s:PhysicalEntityRepresentation)-[:ContainedEntity]->(:PhysicalCompartment {id: 'cell'})
+      WHERE (s)-[:Reactant|Modifier]->(:Process) OR (:Process)-[:Product]->(s)
+      RETURN DISTINCT s.name
+    expected:
+      values: [LacI protein, TetR protein, cI protein, LacI mRNA, TetR mRNA, cI mRNA]
+      rows: 6
+    parts_of_query: ["MATCH", "RETURN", ":ContainedEntity", "cell"]
+
+  - case: reactions_between
+    source: 7
+    category: content/computational
+    prompt: List all reactions that connect LacI protein and TetR mRNA.
+    cypher: >-
+      MATCH (a {name: 'LacI protein'})--(p:Process)--(b {name: 'TetR mRNA'})
+      RETURN DISTINCT p.name
+    expected:
+      values: [transcription of TetR]
+      rows: 1
+    parts_of_query: ["MATCH", "RETURN", "LacI protein", "TetR mRNA", ":Process"]
+
+  - case: model_size
+    source: 8
+    category: content/computational
+    prompt: How many species and how many reactions does the model contain?
+    cypher: >-
+      MATCH (s:PhysicalEntityRepresentation) WHERE NOT s:PhysicalCompartment
+      WITH count(s) AS species
+      MATCH (p:Process) RETURN species, count(p) AS reactions
+    expected:
+      # 7 if the compartment is counted: it is a subclass of physical entity representation
+      values: [[6, 7], 12]
+      rows: null
+    parts_of_query: ["MATCH", "RETURN", "count\\(", ":Process"]
+
+  - case: most_connected
+    source: 9
+    category: content/computational
+    prompt: >-
+      Which species are the most interconnected, i.e. take part in the most
+      reactions?
+    cypher: >-
+      MATCH (s:PhysicalEntityRepresentation)-[:Reactant|Product|Modifier]-(p:Process)
+      RETURN s.name, count(DISTINCT p) AS reactions ORDER BY reactions DESC
+    expected:
+      # all six species take part in three reactions each
+      values: [LacI protein, TetR protein, cI protein, LacI mRNA, TetR mRNA, cI mRNA]
+      rows: 6
+    parts_of_query: ["MATCH", "RETURN", "count\\(", "ORDER BY"]
+
+later:
+  - case: disease_specificity
+    source: 1
+    category: content
+    prompt: How specific is this knowledge graph for a disease?
+    reason: No disease annotations; the repressilator is a synthetic circuit.
+
+  - case: inputs_outputs_phenotypes
+    source: 2
+    category: content
+    prompt: What are the inputs and phenotypic outputs of this system?
+    reason: >-
+      No boundary species or phenotypes in the graph; needs interpretation
+      beyond the graph.
+
+  - case: interaction_details
+    source: 7
+    category: content/computational
+    prompt: >-
+      For LacI protein and TetR mRNA, give the direction (inhibiting/activating)
+      of the reactions between them, their kinetic parameters, relevant
+      literature and available gene expression data.
+    reason: >-
+      Modifier roles (SBO:0000536 partial inhibitor, SBO:0000461 essential
+      activator), kinetic laws and parameters are in the SBML file but not
+      imported by the SBML adapter; no reaction-level literature or expression data.
+
+  - case: upregulation_effect
+    source: 8
+    category: content/computational
+    prompt: If LacI protein is upregulated, what would be expected to happen to TetR mRNA?
+    reason: Needs the sign of the modifier (SBO term), not imported by the SBML adapter.
+
+  - case: compare_models
+    source: 10
+    category: content/computational
+    prompt: >-
+      Compare the SBML and SBGN versions of the repressilator. What is the
+      overlap of elements and interactions?
+    reason: >-
+      Needs the combined SBGN + SBML graph with similarity edges
+      (dev/local_pipelines/create_knowledge_graph_sbgn_sbml_similarity.py).
+
+  - case: modelling_suitability
+    source: 11
+    category: computational
+    prompt: Is this knowledge graph suitable for modelling?
+    reason: >-
+      Needs kinetic laws and parameters (in the SBML file, not imported) and
+      a judgement beyond querying.
+
+  - case: homeostasis_or_pathology
+    source: 12
+    category: disease
+    prompt: Does the knowledge graph represent processes in homeostasis or in a pathological state?
+    reason: No disease or physiological-state annotations.
+
+  - case: element_disease_involvement
+    source: 13
+    category: disease
+    prompt: >-
+      Explain the involvement of [element] in [pathway] and its role in
+      [disease]. What happens when [element] is dysfunctional?
+    reason: No disease in the repressilator; needs a disease map.
+
+  - case: factor_contribution
+    source: 14
+    category: disease
+    prompt: How does [concept/environmental factor/pathway] contribute to [disease]?
+    reason: No disease in the repressilator; needs a disease map.
+
+  - case: initial_event
+    source: 15
+    category: disease
+    prompt: What is the initial event for [disease] and its outcome/endpoint?
+    reason: No disease in the repressilator; needs a disease map.
+
+  - case: growth_defence_literature
+    source: 16
+    category: out of scope
+    prompt: >-
+      Generate lists of reactions/pathways involved in growth or defence from
+      literature or public databases, and analyse how growth and defence are
+      interrelated.
+    reason: Needs literature and external databases.
+
+  - case: patient_trial_matching
+    source: 17
+    category: out of scope
+    prompt: Patient matching or clinical trial matching.
+    reason: Out of scope for a model knowledge graph.
+
+  - case: cell_activation
+    source: 18
+    category: out of scope
+    prompt: Which other cells induce or activate [cell]?
+    reason: No cell-level entities.
+
+  - case: missing_components
+    source: 19
+    category: out of scope
+    prompt: Which components may be missing from [pathway] based on current literature?
+    reason: Needs literature.
+
+  - case: intervention_targets
+    source: 20
+    category: out of scope
+    prompt: >-
+      Which components/submaps are the most promising targets for interventions
+      aimed at alleviating [disease] symptoms?
+    reason: Needs disease context and literature.
