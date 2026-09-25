@@ -25,6 +25,10 @@ similarity = [
     "torch==2.5.1+cpu",
     "sentence-transformers>=5.0.0"
 ]
+export = [
+    "neomodel>=5.5.0",
+    "python-libsbml>=5.20.0",
+]
 momapy_sbml_kinetic = [
     "momapy @ git+https://github.com/adrienrougny/momapy.git@sbml_kinetic",
 ]

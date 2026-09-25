@@ -1,3 +1,6 @@
+import base64
+import re
+
 import libsbml
 from neomodel import db
 
@@ -32,11 +35,36 @@ class SBMLWriter:
     @staticmethod
     def to_sid(node, default_prefix):
         """
-        Convert a neomodel node to a stable SBML id.
+        Convert a neomodel node to a stable, valid SBML id.
+
+        SIds must match [A-Za-z_][A-Za-z0-9_]*, so e.g. UUIDs are rewritten
+        (hyphens -> underscores, leading digit -> prefixed).
         """
         if hasattr(node, "id_") and node.id_:
-            return node.id_
-        return f"{default_prefix}_{node.element_id}"
+            raw = node.id_
+        else:
+            raw = f"{default_prefix}_{node.element_id}"
+        sid = re.sub(r"[^A-Za-z0-9_]", "_", raw)
+        if not re.match(r"[A-Za-z_]", sid):
+            sid = f"{default_prefix}_{sid}"
+        return sid
+
+    @staticmethod
+    def get_notes(node):
+        """
+        Return the XHTML notes of a node, decoding `notes_base64` if needed.
+        """
+        if getattr(node, "notes", None):
+            return node.notes
+        if getattr(node, "notes_base64", None):
+            return base64.b64decode(node.notes_base64).decode()
+        return None
+
+    @classmethod
+    def set_notes(cls, node, sbml_element):
+        notes = cls.get_notes(node)
+        if notes and sbml_element.setNotes(notes) != libsbml.LIBSBML_OPERATION_SUCCESS:
+            print(f"⚠ Could not set notes on '{sbml_element.getId()}'")
 
 
 # ============================================================================
@@ -59,6 +87,7 @@ class SBMLCompartmentWriter(SBMLWriter):
             c.setName(comp.name or sid)
             c.setConstant(True)
             c.setSBOTerm(comp.sbo or "SBO:0000290")
+            self.set_notes(comp, c)
 
 
 # ============================================================================
@@ -66,6 +95,8 @@ class SBMLCompartmentWriter(SBMLWriter):
 # ============================================================================
 
 class SBMLSpeciesWriter(SBMLWriter):
+
+    DEFAULT_COMPARTMENT = "default_compartment"
 
     def write(self):
         """
@@ -80,14 +111,32 @@ class SBMLSpeciesWriter(SBMLWriter):
             s.setId(sid)
             s.setName(node.name or sid)
             s.setSBOTerm(node.sbo or "SBO:0000245")
+            s.setCompartment(self._compartment_id(node))
 
-            # notes + annotations
-            if node.notes:
-                s.setNotes(node.notes)
-            if node.notes_base64:
-                s.appendNotes(f"<p>base64 notes: {node.notes_base64}</p>")
+            # Required in L3; the KG does not store these, so use SBML defaults
+            s.setHasOnlySubstanceUnits(False)
+            s.setBoundaryCondition(False)
+            s.setConstant(False)
 
-            # TODO: Add compartment assignment (if present)
+            self.set_notes(node, s)
+
+    def _compartment_id(self, node):
+        """
+        Compartment from the "contained entity" edge; species without one
+        are placed in a default compartment, since SBML L3 requires it.
+        """
+        compartments = node.compartment.all()
+        if len(compartments) > 1:
+            print(f"⚠ Species '{node.id_}' is in {len(compartments)} compartments, using the first")
+        if compartments:
+            return self.to_sid(compartments[0], "comp")
+
+        if self.sbml_model.getCompartment(self.DEFAULT_COMPARTMENT) is None:
+            c = self.sbml_model.createCompartment()
+            c.setId(self.DEFAULT_COMPARTMENT)
+            c.setConstant(True)
+            c.setSBOTerm("SBO:0000290")
+        return self.DEFAULT_COMPARTMENT
 
 
 # ============================================================================
@@ -109,6 +158,9 @@ class SBMLReactionWriter(SBMLWriter):
             r.setId(rid)
             r.setName(proc.name or rid)
             r.setSBOTerm(proc.sbo or "SBO:0000375")
+            # Required in L3; reversibility is not stored in the KG
+            r.setReversible(False)
+            self.set_notes(proc, r)
 
             self._write_reactants(proc, r)
             self._write_products(proc, r)
@@ -121,6 +173,7 @@ class SBMLReactionWriter(SBMLWriter):
             rel = proc.reactant.relationship(species)
             sr = sbml_reaction.createReactant()
             sr.setSpecies(self.to_sid(species, "species"))
+            sr.setConstant(True)
             if rel.stoichiometry is not None:
                 sr.setStoichiometry(rel.stoichiometry)
 
@@ -130,6 +183,7 @@ class SBMLReactionWriter(SBMLWriter):
             rel = proc.product.relationship(species)
             sp = sbml_reaction.createProduct()
             sp.setSpecies(self.to_sid(species, "species"))
+            sp.setConstant(True)
             if rel.stoichiometry is not None:
                 sp.setStoichiometry(rel.stoichiometry)
 
@@ -158,11 +212,31 @@ class SBMLExporter:
         self.doc = libsbml.SBMLDocument(3, 2)
         self.sbml_model = self.doc.createModel()
 
-        self.sbml_model.setId(self.model.id_ or f"model_{self.model.element_id}")
+        self.sbml_model.setId(SBMLWriter.to_sid(self.model, "model"))
         self.sbml_model.setName(self.model.name or self.sbml_model.getId())
 
         if self.model.sbo:
             self.sbml_model.setSBOTerm(self.model.sbo)
+        SBMLWriter.set_notes(self.model, self.sbml_model)
+
+    def _validate(self):
+        """
+        Run libSBML consistency checks and report errors.
+        Returns the number of errors.
+
+        Units and modeling-practice checks are skipped: the KG does not store
+        units or initial values, so these would only produce noise.
+        """
+        self.doc.setConsistencyChecks(libsbml.LIBSBML_CAT_UNITS_CONSISTENCY, False)
+        self.doc.setConsistencyChecks(libsbml.LIBSBML_CAT_MODELING_PRACTICE, False)
+        self.doc.checkConsistency()
+        n_errors = 0
+        for i in range(self.doc.getNumErrors()):
+            err = self.doc.getError(i)
+            if err.getSeverity() >= libsbml.LIBSBML_SEV_ERROR:
+                n_errors += 1
+                print(f"  [{err.getSeverityAsString()}] {err.getMessage().strip()}")
+        return n_errors
 
     def export(self, outfile: str):
         """
@@ -179,6 +253,10 @@ class SBMLExporter:
 
         for writer in writers:
             writer.write()
+
+        n_errors = self._validate()
+        if n_errors:
+            print(f"⚠ {n_errors} SBML validation error(s), writing anyway")
 
         # --- Write SBML ---
         result = libsbml.writeSBMLToFile(self.doc, outfile)
