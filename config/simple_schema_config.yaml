@@ -173,6 +173,8 @@ reactant: # SBO_0000010: reactant
   represented_as: edge
   inherit_properties: true
   input_label: reactant
+  source: physical entity representation
+  target: process
   properties:
     stoichiometry: float
 
@@ -207,6 +209,8 @@ product: # SBO_0000011: product
   represented_as: edge
   inherit_properties: true
   input_label: product
+  source: process
+  target: physical entity representation
   properties:
     stoichiometry: float
 
@@ -242,6 +246,8 @@ modifier: # SBO_0000019: modifier
   represented_as: edge
   inherit_properties: true
   input_label: modifier
+  source: physical entity representation
+  target: process
 
   properties:
     name: string
@@ -276,6 +282,8 @@ contained entity: # SBO_0000664
   represented_as: edge
   inherit_properties: true
   input_label: contained entity
+  source: physical entity representation
+  target: physical compartment
 
   properties:
     name: string
