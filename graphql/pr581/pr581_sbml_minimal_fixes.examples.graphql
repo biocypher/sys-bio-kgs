@@ -1,0 +1,56 @@
+# Example queries for pr581_sbml_minimal_fixes.graphql (PR #581 output + minimal fixes).
+# Serve it with:
+#   GRAPHQL_SCHEMA=pr581/pr581_sbml_minimal_fixes.graphql docker compose --profile graphql up -d --no-deps --force-recreate graphql
+# then paste into the Apollo Sandbox at http://localhost:4000 and pick an operation to run.
+
+# The model and its name
+query Models {
+  models {
+    id
+    name
+  }
+}
+
+# Species with their compartment and model
+# (also returns the compartment itself: it carries the PhysicalEntityRepresentation label)
+query Species {
+  physicalEntityRepresentations {
+    id
+    name
+    containedentity { id }
+    isentityof { name }
+  }
+}
+
+# Reactions a species takes part in: only possible from the species side,
+# the PR generates no field for reactants on Process
+query ReactionsOfSpecies {
+  physicalEntityRepresentations(where: { id: { eq: "X" } }) {
+    id
+    name
+    reactant { id name }
+    modifier { id name }
+  }
+}
+
+# Products of each reaction
+query ReactionProducts {
+  processes {
+    id
+    name
+    product { id name }
+  }
+}
+
+# Relationship properties via the connection API
+query ReactantStoichiometry {
+  physicalEntityRepresentations(where: { id: { eq: "X" } }) {
+    id
+    reactantConnection {
+      edges {
+        properties { stoichiometry }
+        node { id name }
+      }
+    }
+  }
+}

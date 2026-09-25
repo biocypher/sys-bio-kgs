@@ -1,0 +1,201 @@
+# Output of PR #581 (pr581_sbml.graphql) with two minimal fixes so it works
+# with @neo4j/graphql 7 and the database BioCypher writes:
+#  1. relationship properties: 'interface ... @relationshipProperties' -> 'type'
+#  2. relationship types: SCREAMING_SNAKE_CASE -> BioCypher's names (e.g. CONTAINED_ENTITY -> ContainedEntity)
+
+type Model @node(labels: ["Model"]) {
+  id: ID!
+  name: String
+  sbo: String
+  notes_base64: String
+  notes: String
+  encodes: String
+  hasPart: String
+  hasProperty: String
+  hasVersion: String
+  is: String
+  isDescribedBy: String
+  isEncodedBy: String
+  isHomologTo: String
+  isPartOf: String
+  isPropertyOf: String
+  isVersionOf: String
+  occursIn: String
+  hasTaxon: String
+  hasInstance: String
+  isDerivedFrom: String
+  isInstanceOf: String
+}
+
+type Process @node(labels: ["Process"]) {
+  id: ID!
+  name: String
+  sbo: String
+  notes_base64: String
+  notes: String
+  encodes: String
+  hasPart: String
+  hasProperty: String
+  hasVersion: String
+  is: String
+  isDescribedBy: String
+  isEncodedBy: String
+  isHomologTo: String
+  isPartOf: String
+  isPropertyOf: String
+  isVersionOf: String
+  occursIn: String
+  hasTaxon: String
+  hasInstance: String
+  isDerivedFrom: String
+  isInstanceOf: String
+  product: [PhysicalEntityRepresentation!]! @relationship(type: "Product", direction: OUT, properties: "ProductProps")
+  isprocessof: [Model!]! @relationship(type: "IsProcessOf", direction: OUT)
+}
+
+type PhysicalEntityRepresentation @node(labels: ["PhysicalEntityRepresentation"]) {
+  id: ID!
+  name: String
+  sbo: String
+  notes_base64: String
+  notes: String
+  encodes: String
+  hasPart: String
+  hasProperty: String
+  hasVersion: String
+  is: String
+  isDescribedBy: String
+  isEncodedBy: String
+  isHomologTo: String
+  isPartOf: String
+  isPropertyOf: String
+  isVersionOf: String
+  occursIn: String
+  hasTaxon: String
+  hasInstance: String
+  isDerivedFrom: String
+  isInstanceOf: String
+  reactant: [Process!]! @relationship(type: "Reactant", direction: OUT, properties: "ReactantProps")
+  modifier: [Process!]! @relationship(type: "Modifier", direction: OUT, properties: "ModifierProps")
+  containedentity: [PhysicalCompartment!]! @relationship(type: "ContainedEntity", direction: OUT, properties: "ContainedEntityProps")
+  isentityof: [Model!]! @relationship(type: "IsEntityOf", direction: OUT)
+}
+
+type PhysicalCompartment @node(labels: ["PhysicalCompartment"]) {
+  id: ID!
+  name: String
+  sbo: String
+  notes_base64: String
+  notes: String
+  encodes: String
+  hasPart: String
+  hasProperty: String
+  hasVersion: String
+  is: String
+  isDescribedBy: String
+  isEncodedBy: String
+  isHomologTo: String
+  isPartOf: String
+  isPropertyOf: String
+  isVersionOf: String
+  occursIn: String
+  hasTaxon: String
+  hasInstance: String
+  isDerivedFrom: String
+  isInstanceOf: String
+  iscompartmentof: [Model!]! @relationship(type: "IsCompartmentOf", direction: OUT)
+}
+
+type ReactantProps @relationshipProperties {
+  stoichiometry: Float
+  name: String
+  sbo: String
+  notes_base64: String
+  notes: String
+  encodes: String
+  hasPart: String
+  hasProperty: String
+  hasVersion: String
+  is: String
+  isDescribedBy: String
+  isEncodedBy: String
+  isHomologTo: String
+  isPartOf: String
+  isPropertyOf: String
+  isVersionOf: String
+  occursIn: String
+  hasTaxon: String
+  hasInstance: String
+  isDerivedFrom: String
+  isInstanceOf: String
+}
+
+type ProductProps @relationshipProperties {
+  stoichiometry: Float
+  name: String
+  sbo: String
+  notes_base64: String
+  notes: String
+  encodes: String
+  hasPart: String
+  hasProperty: String
+  hasVersion: String
+  is: String
+  isDescribedBy: String
+  isEncodedBy: String
+  isHomologTo: String
+  isPartOf: String
+  isPropertyOf: String
+  isVersionOf: String
+  occursIn: String
+  hasTaxon: String
+  hasInstance: String
+  isDerivedFrom: String
+  isInstanceOf: String
+}
+
+type ModifierProps @relationshipProperties {
+  name: String
+  sbo: String
+  notes_base64: String
+  notes: String
+  encodes: String
+  hasPart: String
+  hasProperty: String
+  hasVersion: String
+  is: String
+  isDescribedBy: String
+  isEncodedBy: String
+  isHomologTo: String
+  isPartOf: String
+  isPropertyOf: String
+  isVersionOf: String
+  occursIn: String
+  hasTaxon: String
+  hasInstance: String
+  isDerivedFrom: String
+  isInstanceOf: String
+}
+
+type ContainedEntityProps @relationshipProperties {
+  name: String
+  sbo: String
+  notes_base64: String
+  notes: String
+  encodes: String
+  hasPart: String
+  hasProperty: String
+  hasVersion: String
+  is: String
+  isDescribedBy: String
+  isEncodedBy: String
+  isHomologTo: String
+  isPartOf: String
+  isPropertyOf: String
+  isVersionOf: String
+  occursIn: String
+  hasTaxon: String
+  hasInstance: String
+  isDerivedFrom: String
+  isInstanceOf: String
+}

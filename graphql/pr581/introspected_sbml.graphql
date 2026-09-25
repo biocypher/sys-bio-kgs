@@ -1,0 +1,78 @@
+type ContainedEntityProperties @relationshipProperties {
+	id: String!
+}
+
+type IsCompartmentOfProperties @relationshipProperties {
+	id: String!
+	label: String!
+}
+
+type IsEntityOfProperties @relationshipProperties {
+	id: String!
+	label: String!
+}
+
+type IsProcessOfProperties @relationshipProperties {
+	id: String!
+	label: String!
+}
+
+type MaterialEntity @node(labels: ["MaterialEntity", "PhysicalCompartment", "PhysicalEntityRepresentation", "SystemsBiologyRepresentation"]) {
+	id: String!
+	is: String!
+	isCompartmentOfModels: [Model!]! @relationship(type: "IsCompartmentOf", direction: OUT, properties: "IsCompartmentOfProperties")
+	physicalEntityRepresentationsContainedEntity: [PhysicalEntityRepresentation!]! @relationship(type: "ContainedEntity", direction: IN, properties: "ContainedEntityProperties")
+	preferred_id: String!
+}
+
+type Model @node(labels: ["Model", "OccurringEntityRepresentation", "SystemsBiologyRepresentation"]) {
+	id: String!
+	is: String!
+	isDescribedBy: String!
+	isVersionOf: String!
+	materialEntitiesIsCompartmentOf: [MaterialEntity!]! @relationship(type: "IsCompartmentOf", direction: IN, properties: "IsCompartmentOfProperties")
+	name: String!
+	notes_base64: String!
+	occurringEntityRepresentationsIsProcessOf: [OccurringEntityRepresentation!]! @relationship(type: "IsProcessOf", direction: IN, properties: "IsProcessOfProperties")
+	occursIn: String!
+	physicalEntityRepresentationsIsEntityOf: [PhysicalEntityRepresentation!]! @relationship(type: "IsEntityOf", direction: IN, properties: "IsEntityOfProperties")
+	preferred_id: String!
+}
+
+type ModifierProperties @relationshipProperties {
+	id: String!
+}
+
+type OccurringEntityRepresentation @node(labels: ["OccurringEntityRepresentation", "Process", "SystemsBiologyRepresentation"]) {
+	id: String!
+	isProcessOfModels: [Model!]! @relationship(type: "IsProcessOf", direction: OUT, properties: "IsProcessOfProperties")
+	isVersionOf: String!
+	name: String!
+	physicalEntityRepresentationsModifier: [PhysicalEntityRepresentation!]! @relationship(type: "Modifier", direction: IN, properties: "ModifierProperties")
+	physicalEntityRepresentationsReactant: [PhysicalEntityRepresentation!]! @relationship(type: "Reactant", direction: IN, properties: "ReactantProperties")
+	preferred_id: String!
+	productPhysicalEntityRepresentations: [PhysicalEntityRepresentation!]! @relationship(type: "Product", direction: OUT, properties: "ProductProperties")
+}
+
+type PhysicalEntityRepresentation @node(labels: ["PhysicalEntityRepresentation", "SystemsBiologyRepresentation"]) {
+	containedEntityMaterialEntities: [MaterialEntity!]! @relationship(type: "ContainedEntity", direction: OUT, properties: "ContainedEntityProperties")
+	encodes: String
+	id: String!
+	is: String
+	isEntityOfModels: [Model!]! @relationship(type: "IsEntityOf", direction: OUT, properties: "IsEntityOfProperties")
+	isVersionOf: String
+	modifierOccurringEntityRepresentations: [OccurringEntityRepresentation!]! @relationship(type: "Modifier", direction: OUT, properties: "ModifierProperties")
+	name: String!
+	notes_base64: String
+	occurringEntityRepresentationsProduct: [OccurringEntityRepresentation!]! @relationship(type: "Product", direction: IN, properties: "ProductProperties")
+	preferred_id: String!
+	reactantOccurringEntityRepresentations: [OccurringEntityRepresentation!]! @relationship(type: "Reactant", direction: OUT, properties: "ReactantProperties")
+}
+
+type ProductProperties @relationshipProperties {
+	id: String!
+}
+
+type ReactantProperties @relationshipProperties {
+	id: String!
+}

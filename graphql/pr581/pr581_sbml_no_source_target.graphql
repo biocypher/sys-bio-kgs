@@ -1,0 +1,192 @@
+type Model @node(labels: ["Model"]) {
+  id: ID!
+  name: String
+  sbo: String
+  notes_base64: String
+  notes: String
+  encodes: String
+  hasPart: String
+  hasProperty: String
+  hasVersion: String
+  is: String
+  isDescribedBy: String
+  isEncodedBy: String
+  isHomologTo: String
+  isPartOf: String
+  isPropertyOf: String
+  isVersionOf: String
+  occursIn: String
+  hasTaxon: String
+  hasInstance: String
+  isDerivedFrom: String
+  isInstanceOf: String
+}
+
+type Process @node(labels: ["Process"]) {
+  id: ID!
+  name: String
+  sbo: String
+  notes_base64: String
+  notes: String
+  encodes: String
+  hasPart: String
+  hasProperty: String
+  hasVersion: String
+  is: String
+  isDescribedBy: String
+  isEncodedBy: String
+  isHomologTo: String
+  isPartOf: String
+  isPropertyOf: String
+  isVersionOf: String
+  occursIn: String
+  hasTaxon: String
+  hasInstance: String
+  isDerivedFrom: String
+  isInstanceOf: String
+  isprocessof: [Model!]! @relationship(type: "IS_PROCESS_OF", direction: OUT)
+}
+
+type PhysicalEntityRepresentation @node(labels: ["PhysicalEntityRepresentation"]) {
+  id: ID!
+  name: String
+  sbo: String
+  notes_base64: String
+  notes: String
+  encodes: String
+  hasPart: String
+  hasProperty: String
+  hasVersion: String
+  is: String
+  isDescribedBy: String
+  isEncodedBy: String
+  isHomologTo: String
+  isPartOf: String
+  isPropertyOf: String
+  isVersionOf: String
+  occursIn: String
+  hasTaxon: String
+  hasInstance: String
+  isDerivedFrom: String
+  isInstanceOf: String
+  isentityof: [Model!]! @relationship(type: "IS_ENTITY_OF", direction: OUT)
+}
+
+type PhysicalCompartment @node(labels: ["PhysicalCompartment"]) {
+  id: ID!
+  name: String
+  sbo: String
+  notes_base64: String
+  notes: String
+  encodes: String
+  hasPart: String
+  hasProperty: String
+  hasVersion: String
+  is: String
+  isDescribedBy: String
+  isEncodedBy: String
+  isHomologTo: String
+  isPartOf: String
+  isPropertyOf: String
+  isVersionOf: String
+  occursIn: String
+  hasTaxon: String
+  hasInstance: String
+  isDerivedFrom: String
+  isInstanceOf: String
+  iscompartmentof: [Model!]! @relationship(type: "IS_COMPARTMENT_OF", direction: OUT)
+}
+
+interface ReactantProps @relationshipProperties {
+  stoichiometry: Float
+  name: String
+  sbo: String
+  notes_base64: String
+  notes: String
+  encodes: String
+  hasPart: String
+  hasProperty: String
+  hasVersion: String
+  is: String
+  isDescribedBy: String
+  isEncodedBy: String
+  isHomologTo: String
+  isPartOf: String
+  isPropertyOf: String
+  isVersionOf: String
+  occursIn: String
+  hasTaxon: String
+  hasInstance: String
+  isDerivedFrom: String
+  isInstanceOf: String
+}
+
+interface ProductProps @relationshipProperties {
+  stoichiometry: Float
+  name: String
+  sbo: String
+  notes_base64: String
+  notes: String
+  encodes: String
+  hasPart: String
+  hasProperty: String
+  hasVersion: String
+  is: String
+  isDescribedBy: String
+  isEncodedBy: String
+  isHomologTo: String
+  isPartOf: String
+  isPropertyOf: String
+  isVersionOf: String
+  occursIn: String
+  hasTaxon: String
+  hasInstance: String
+  isDerivedFrom: String
+  isInstanceOf: String
+}
+
+interface ModifierProps @relationshipProperties {
+  name: String
+  sbo: String
+  notes_base64: String
+  notes: String
+  encodes: String
+  hasPart: String
+  hasProperty: String
+  hasVersion: String
+  is: String
+  isDescribedBy: String
+  isEncodedBy: String
+  isHomologTo: String
+  isPartOf: String
+  isPropertyOf: String
+  isVersionOf: String
+  occursIn: String
+  hasTaxon: String
+  hasInstance: String
+  isDerivedFrom: String
+  isInstanceOf: String
+}
+
+interface ContainedEntityProps @relationshipProperties {
+  name: String
+  sbo: String
+  notes_base64: String
+  notes: String
+  encodes: String
+  hasPart: String
+  hasProperty: String
+  hasVersion: String
+  is: String
+  isDescribedBy: String
+  isEncodedBy: String
+  isHomologTo: String
+  isPartOf: String
+  isPropertyOf: String
+  isVersionOf: String
+  occursIn: String
+  hasTaxon: String
+  hasInstance: String
+  isDerivedFrom: String
+  isInstanceOf: String
+}
