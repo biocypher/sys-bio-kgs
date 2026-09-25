@@ -60,3 +60,31 @@ services:
       import:
         condition: service_completed_successfully
     user: *user
+
+  # Optional: BioChatter Light (knowledge graph tab) on the deployed database, at
+  # http://localhost:8501. Needs GOOGLE_API_KEY (Gemini), e.g. in .env (git-ignored).
+  # Start with: docker compose --profile biochatter up -d --no-deps biochatter
+  biochatter:
+    image: biocypher/biochatter-light:0.9.0
+    profiles: ["biochatter"]
+    volumes:
+      # registers BIOCHATTER_DEFAULT_MODEL as a Gemini model (see the file)
+      - ./docker/biochatter:/patches:ro
+    environment:
+      PYTHONPATH: /patches
+      DOCKER_COMPOSE: "true"
+      NEO4J_URI: bolt://deploy:7687
+      # the database runs without authentication; any credentials are accepted
+      NEO4J_USER: neo4j
+      NEO4J_PASSWORD: neo4j
+      NEO4J_DBNAME: neo4j
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
+      BIOCHATTER_DEFAULT_MODEL: ${BIOCHATTER_MODEL:-gemini-flash-lite-latest}
+      BIOCHATTER_DEFAULT_MODEL_PROVIDER: google_genai
+      KNOWLEDGE_GRAPH_TAB: "true"
+      CHAT_TAB: "false"
+      PROMPT_ENGINEERING_TAB: "false"
+      RAG_TAB: "false"
+      CORRECTING_AGENT_TAB: "false"
+    ports:
+      - "127.0.0.1:8501:8501"

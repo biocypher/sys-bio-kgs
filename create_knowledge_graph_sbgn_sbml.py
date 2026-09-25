@@ -87,6 +87,8 @@ def main():
 
     # Create import script and final summary
     bc.write_import_call()
+    # Schema info as a node in the graph, e.g. for BioChatter's knowledge graph tab
+    bc.write_schema_info(as_node=True)
     bc.summary()
 
 

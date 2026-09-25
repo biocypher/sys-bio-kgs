@@ -162,6 +162,25 @@ Notes:
 To export a model from the running database back to SBML, see
 [export_scripts](export_scripts).
 
+### BioChatter
+
+[BioChatter Light](https://github.com/biocypher/biochatter-light) can answer
+questions about the deployed graph in natural language (knowledge graph tab).
+It reads the graph schema from the `Schema_info` node that the pipeline scripts
+write (`write_schema_info`), and uses a Gemini model: put a key from
+[Google AI Studio](https://aistudio.google.com) in `.env` (git-ignored) as
+`GOOGLE_API_KEY=...`, then, with the database deployed:
+
+```bash
+docker compose --profile biochatter up -d --no-deps biochatter
+```
+
+and open http://localhost:8501. `BIOCHATTER_MODEL=<model>` selects the Gemini
+model (default `gemini-flash-lite-latest`, which has usable free-tier rate
+limits). The image only accepts keys for a fixed list of older Gemini models;
+[docker/biochatter/sitecustomize.py](docker/biochatter/sitecustomize.py) adds
+the configured model to that list at start-up.
+
 ## Testing
 
 Run the test suite:
