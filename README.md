@@ -131,7 +131,7 @@ files inspected or deleted locally:
 | import | `docker compose run --rm --no-deps import` | `biocypher-out/build2neo/` | `neo4j/data/` (overwritten) |
 | deploy | `docker compose up -d --no-deps deploy` | `neo4j/data/` | `neo4j/logs/`, `neo4j/plugins/` |
 
-`docker compose up -d` runs all three steps in order. Neo4j (with APOC) is then
+`docker compose up -d` runs all three steps in order. Neo4j 5.26 Community (with APOC) is then
 available at http://localhost:7474 (bolt: `localhost:7687`, no authentication);
 stop it with `docker compose down`.
 
