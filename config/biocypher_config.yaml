@@ -19,7 +19,8 @@ biocypher:
 
   log_directory: biocypher-log
 
-  # output_directory: biocypher-out
+  # build2neo is mounted into the import container (docker-compose.yml)
+  output_directory: biocypher-out/build2neo
 
   cache_directory: .cache
 
@@ -59,7 +60,8 @@ neo4j:
   skip_bad_relationships: false
 
   # import_call_bin_prefix: bin/
-  # import_call_file_prefix: path/to/files/
+  # path of output_directory inside the import container
+  import_call_file_prefix: /build2neo
 
 #---- PostgreSQL database management system
 postgresql:

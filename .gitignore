@@ -140,6 +140,7 @@ dmypy.json
 # Project-specific
 logs/
 output/
+neo4j/
 data/
 *.db
 *.sqlite

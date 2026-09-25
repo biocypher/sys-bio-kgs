@@ -5,6 +5,7 @@ sys-bio-kgs - A repository for the implementations of the 2025 BioHackathon Germ
 This script creates a knowledge graph using BioCypher and the SBGNAdapter.
 """
 
+import argparse
 import logging
 from pathlib import Path
 
@@ -12,6 +13,7 @@ from biocypher import BioCypher
 
 from sys_bio_kgs.adapters.sbml_adapter import SBMLAdapter as Adapter
 from sys_bio_kgs.adapters.momapy_sbgn_adapter import MoMaPySBGNAdapter
+from sys_bio_kgs.output import clean_biocypher_output
 
 # Configure logging
 logging.basicConfig(
@@ -21,8 +23,20 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--clean",
+        action="store_true",
+        help="Remove BioCypher output from earlier runs before writing. "
+        "Omit to add to existing output, e.g. when building from several scripts.",
+    )
+    return parser.parse_args()
+
+
 def main():
     """Main function to create the knowledge graph."""
+    args = parse_args()
     logger.info("Starting sys-bio-kgs knowledge graph creation")
     
     # Initialize BioCypher
@@ -30,6 +44,10 @@ def main():
         biocypher_config_path="config/biocypher_config.yaml",
         schema_config_path="config/simple_schema_config.yaml",
     )
+
+    if args.clean:
+        # output directory as resolved by BioCypher from the config
+        clean_biocypher_output(bc._output_directory)
     
     # Initialize the SBGN adapter
     sbml_data_source = "data/matched_annotated_repressilator_BIOMD0000000012.xml"

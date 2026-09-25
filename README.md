@@ -121,18 +121,47 @@ The pipeline uses two main configuration files:
 - `config/schema_config.yaml` - Schema mapping configuration
 ### Docker Usage
 
-Build and run with Docker:
+The Docker pipeline has three steps. Each step reads from and writes to
+directories in the repository, so steps can be run on their own and their
+files inspected or deleted locally:
+
+| Step | Command | Reads | Writes |
+|---|---|---|---|
+| build | `docker compose run --rm build` | `data/` | `biocypher-out/build2neo/`, `biocypher-log/` |
+| import | `docker compose run --rm --no-deps import` | `biocypher-out/build2neo/` | `neo4j/data/` (overwritten) |
+| deploy | `docker compose up -d --no-deps deploy` | `neo4j/data/` | `neo4j/logs/`, `neo4j/plugins/` |
+
+`docker compose up -d` runs all three steps in order. Neo4j (with APOC) is then
+available at http://localhost:7474 (bolt: `localhost:7687`, no authentication);
+stop it with `docker compose down`.
+
+Create the host directories once before the first run; otherwise Docker
+creates them owned by root:
 
 ```bash
-docker-compose up -d
+mkdir -p biocypher-out/build2neo neo4j/{data,logs,plugins}
 ```
 
-This will:
-1. Build the BioCypher pipeline
-2. Import the data into Neo4j
-3. Start the Neo4j instance
+Notes:
+- Containers run as your user (`UID`/`GID`, default `1000:1000`), so all files
+  are owned by you. If your IDs differ, `export UID GID=$(id -g)` first.
+- The build step can be replaced by running the pipeline on the host, which
+  writes to the same place (`output_directory` in `config/biocypher_config.yaml`):
+  `uv run python create_knowledge_graph_sbgn_sbml.py --clean`
+- BioCypher adds to the output of earlier runs rather than replacing it, and
+  the import loads all of it. `--clean` first removes the BioCypher files from
+  earlier runs; leave it out to combine the output of several scripts.
+  The build step passes `--clean` unless `CLEAN_OUTPUT=0` is set.
+- `PIPELINE_SCRIPT=<script.py>` selects the script run by the build step
+  (it must accept `--clean`, or use `CLEAN_OUTPUT=0`).
+- `NEO4J_DIR=<dir>` keeps a separate database next to the default `neo4j/`,
+  e.g. `NEO4J_DIR=neo4j_other docker compose run --rm --no-deps import`.
+- The build step keeps its uv cache and virtualenv in `.cache/`.
+- To start over: `rm -rf biocypher-out/build2neo/* neo4j/data`.
 
-Access Neo4j at: http://localhost:7474
+To export a model from the running database back to SBML, see
+[export_scripts](export_scripts).
+
 ## Testing
 
 Run the test suite:
@@ -159,7 +188,9 @@ sys-bio-kgs/
 │       └── my_resource_adapter.py
 ├── create_knowledge_graph.py
 ├── docker-compose.yml
-├── Dockerfile
+├── scripts/
+│   ├── build.sh
+│   └── import.sh
 ├── tests/
 │   └── test_my_resource_adapter.py
 ├── pyproject.toml
