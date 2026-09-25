@@ -16,7 +16,6 @@ Neo4j 5.26.
 | `pr581_sbml_minimal_fixes.checks.js`, `.examples.graphql` | Checks against Cypher and example queries for it |
 | `introspected_sbml.graphql` | Baseline: Neo4j's introspector run on the same database |
 | `compare_naming.py` | PR name conversion vs. the labels/relationship types BioCypher writes (finding 10) |
-| `review_comment.md` | Draft review comment for the PR |
 
 The hand-written schema it is compared with is the API's `../schema/sbml.graphql`.
 
