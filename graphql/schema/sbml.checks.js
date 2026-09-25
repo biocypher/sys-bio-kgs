@@ -1,0 +1,33 @@
+// Checks for schema/sbml.graphql: GraphQL results compared with Cypher counts
+const flat = (nodes, field) => nodes.flatMap((n) => n[field]).length;
+
+export const checks = [
+  ["models", "{ models { id name } }", (d) => d.models.length,
+   "MATCH (n:Model) RETURN count(n)"],
+  ["species (PhysicalEntityRepresentation)", "{ physicalEntityRepresentations { id name } }",
+   (d) => d.physicalEntityRepresentations.length,
+   "MATCH (n:PhysicalEntityRepresentation) WHERE NOT n:PhysicalCompartment RETURN count(n)"],
+  ["reactions (Process)", "{ processes { id name } }", (d) => d.processes.length,
+   "MATCH (n:Process) RETURN count(n)"],
+  ["species -> reaction (reactantOf)", "{ physicalEntityRepresentations { reactantOf { id } } }",
+   (d) => flat(d.physicalEntityRepresentations, "reactantOf"), "MATCH ()-[r:Reactant]->() RETURN count(r)"],
+  ["reaction <- species (reactants)", "{ processes { reactants { id } } }",
+   (d) => flat(d.processes, "reactants"), "MATCH ()-[r:Reactant]->() RETURN count(r)"],
+  ["reaction <- species (modifiers)", "{ processes { modifiers { id } } }",
+   (d) => flat(d.processes, "modifiers"), "MATCH ()-[r:Modifier]->() RETURN count(r)"],
+  ["reaction -> species (products)", "{ processes { products { id } } }",
+   (d) => flat(d.processes, "products"), "MATCH ()-[r:Product]->() RETURN count(r)"],
+  ["species <- reaction (productOf)", "{ physicalEntityRepresentations { productOf { id } } }",
+   (d) => flat(d.physicalEntityRepresentations, "productOf"), "MATCH ()-[r:Product]->() RETURN count(r)"],
+  ["species -> compartment (compartment)", "{ physicalEntityRepresentations { compartment { id } } }",
+   (d) => flat(d.physicalEntityRepresentations, "compartment"), "MATCH ()-[r:ContainedEntity]->() RETURN count(r)"],
+  ["compartment <- species (entities)", "{ physicalCompartments { entities { id } } }",
+   (d) => flat(d.physicalCompartments, "entities"), "MATCH ()-[r:ContainedEntity]->() RETURN count(r)"],
+  ["model <- reactions (processes)", "{ models { processes { id } } }",
+   (d) => flat(d.models, "processes"), "MATCH ()-[r:IsProcessOf]->() RETURN count(r)"],
+  ["all nodes (interface SystemsBiologyRepresentation)", "{ systemsBiologyRepresentations { id } }",
+   (d) => d.systemsBiologyRepresentations.length, "MATCH (n:SystemsBiologyRepresentation) RETURN count(n)"],
+  ["distinct nodes via interface", "{ systemsBiologyRepresentations { id } }",
+   (d) => new Set(d.systemsBiologyRepresentations.map((n) => n.id)).size,
+   "MATCH (n:SystemsBiologyRepresentation) RETURN count(n)"],
+];

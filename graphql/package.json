@@ -1,0 +1,19 @@
+{
+  "name": "sys-bio-kgs-graphql",
+  "private": true,
+  "description": "GraphQL API (Neo4j GraphQL Library) on the sys-bio-kgs Neo4j database",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@apollo/server": "^5.5.1",
+    "@neo4j/graphql": "^7.6.3",
+    "graphql": "^16.11.0",
+    "neo4j-driver": "^5.28.3"
+  },
+  "devDependencies": {
+    "@neo4j/introspector": "^5.0.1"
+  }
+}

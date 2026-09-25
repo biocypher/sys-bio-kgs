@@ -60,3 +60,20 @@ services:
       import:
         condition: service_completed_successfully
     user: *user
+
+  # Optional: GraphQL API (Neo4j GraphQL Library) on the deployed database, at
+  # http://localhost:4000. Start with: docker compose --profile graphql up -d --no-deps graphql
+  graphql:
+    image: node:24-slim
+    profiles: ["graphql"]
+    working_dir: /app
+    volumes:
+      - ./graphql:/app
+    environment:
+      HOME: /tmp
+      NEO4J_URI: bolt://deploy:7687
+      SCHEMA: ${GRAPHQL_SCHEMA:-schema/sbml.graphql}
+    command: ["sh", "-c", "npm ci --no-audit --no-fund && node index.js"]
+    ports:
+      - "127.0.0.1:4000:4000"
+    user: *user

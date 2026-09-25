@@ -1,0 +1,78 @@
+# Example queries for schema/sbml.graphql (the default schema of the graphql service).
+# Paste into the Apollo Sandbox at http://localhost:4000 and pick an operation to run.
+
+# The model with counts of its parts
+query ModelOverview {
+  models {
+    id
+    name
+    entitiesConnection { totalCount }
+    processesConnection { totalCount }
+    compartments { id }
+  }
+}
+
+# A reaction with its reactants, modifiers and products
+query Reaction {
+  processes(where: { id: { eq: "Reaction4" } }) {
+    id
+    name
+    reactants { id name }
+    modifiers { id name }
+    products { id name }
+  }
+}
+
+# All reactions, as a reaction list
+query Reactions {
+  processes(sort: [{ id: ASC }]) {
+    id
+    name
+    reactants { name }
+    modifiers { name }
+    products { name }
+  }
+}
+
+# Where a species is used, and its compartment
+query SpeciesUsage {
+  physicalEntityRepresentations(where: { name: { eq: "LacI protein" } }) {
+    id
+    name
+    is
+    compartment { id }
+    reactantOf { name }
+    modifierOf { name }
+    productOf { name }
+  }
+}
+
+# Species in a compartment
+query CompartmentContents {
+  physicalCompartments {
+    id
+    entities { id name }
+  }
+}
+
+# Search by name across all types (interface for the ontology root)
+query SearchByName {
+  systemsBiologyRepresentations(where: { name: { contains: "LacI" } }) {
+    __typename
+    id
+    name
+  }
+}
+
+# Relationship properties via the connection API
+query ProductStoichiometry {
+  processes(where: { id: { eq: "Reaction4" } }) {
+    id
+    productsConnection {
+      edges {
+        properties { stoichiometry }
+        node { id name }
+      }
+    }
+  }
+}
