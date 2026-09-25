@@ -5,6 +5,8 @@ I tested the PR (at `852dae1`) on a real BioCypher graph: an SBML model
 generated schema with the current Neo4j GraphQL Library (`@neo4j/graphql` 7.6.3)
 and comparing query results with Cypher. I did the testing and drafted this
 review together with Claude Code (Anthropic's AI coding assistant).
+Setup, generated schemas, test scripts and full findings (with steps to
+reproduce): https://github.com/biocypher/sys-bio-kgs/tree/3dbd9e9/graphql/pr581
 
 In short: the generated schema can't be used as is. Most of the problems come
 from one design choice, so I've started with that.
