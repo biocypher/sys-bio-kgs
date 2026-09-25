@@ -224,7 +224,6 @@ def parse_args():
 def main():
 
     from neomodel import get_config
-    from models import Model
 
     config = get_config()
     config.database_url = 'bolt://neo4j:password@localhost:7687'  # default
