@@ -3,7 +3,8 @@ Thanks for picking this up, @iqb430, and sorry for the slow reply!
 I tested the PR (at `852dae1`) on a real BioCypher graph: an SBML model
 (the repressilator) built with BioCypher 0.17 into Neo4j 5.26, serving the
 generated schema with the current Neo4j GraphQL Library (`@neo4j/graphql` 7.6.3)
-and comparing query results with Cypher.
+and comparing query results with Cypher. I did the testing and drafted this
+review together with Claude Code (Anthropic's AI coding assistant).
 
 In short: the generated schema can't be used as is. Most of the problems come
 from one design choice, so I've started with that.
@@ -25,8 +26,7 @@ for relationship types, and for node labels as well:
 | non-coding RNA | `NoncodingRNA` | `NonCodingRna` ❌ | `NON_CODING_RNA` ❌ |
 | SBML model | `SBMLModel` | `SbmlModel` ❌ | `SBML_MODEL` ❌ |
 
-(The relationship type in my example in #500 was illustrative only, sorry for
-the confusion.) In the test, every relationship query returned 0 results
+(The relationship type in my example in #500 was illustrative only.) In the test, every relationship query returned 0 results
 (Cypher: 6 each) until the types were renamed.
 
 Working from the dict also misses what BioCypher resolves in the ontology:
@@ -63,15 +63,14 @@ Both would build on how #435 / #516 settle edge renaming.
    camelCase (`containedEntity`) would be a start. Names that describe the
    role (`reactants`, `products`, `compartment`) would be even nicer, but that
    may need a schema option.
-7. It isn't wired into the API yet, and there are no tests or docs. The branch
-   is also far behind `main`.
+7. It isn't wired into the API yet, and there are no tests or docs.
 
 One thing a generator will need to handle: BioCypher gives nodes the labels
 of their parent classes too, and the Neo4j GraphQL Library matches nodes on
 labels they have. So a type for a parent class also returns subclass nodes.
 For example, the compartment appears among the species, and Neo4j's own
-introspector has the same issue. Using GraphQL interfaces for parent classes
-might be a way to handle this.
+introspector has the same issue. How best to handle this, e.g. with GraphQL
+interfaces for parent classes, is still an open question.
 
 With fixes for 1 and 4 and the renamed relationship types, all relationship
 and property queries matched Cypher, so the overall approach works. For reference, here is an excerpt
