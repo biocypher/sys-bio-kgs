@@ -154,5 +154,6 @@ dev/
 neo4j_db/
 neo4j_logs/
 *.sublime-project
+*.sublime-workspace
 export_scripts/*.xml
 export_scripts/generated_models.py
