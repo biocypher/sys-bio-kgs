@@ -15,6 +15,8 @@ Neo4j 5.26.
 | `pr581_sbml_minimal_fixes.graphql` | PR output with the three fixes needed to use it (see header) |
 | `pr581_sbml_minimal_fixes.checks.js`, `.examples.graphql` | Checks against Cypher and example queries for it |
 | `introspected_sbml.graphql` | Baseline: Neo4j's introspector run on the same database |
+| `compare_naming.py` | PR name conversion vs. the labels/relationship types BioCypher writes (finding 10) |
+| `review_comment.md` | Draft review comment for the PR |
 
 The hand-written schema it is compared with is the API's `../schema/sbml.graphql`.
 
@@ -52,6 +54,43 @@ To try the PR schema in the Apollo Sandbox:
 | 7 | Field names are unreadable (`containedentity`, `isentityof`) | |
 | 8 | Mutations are generated (12 create/update/delete fields); a knowledge graph API should default to read-only | |
 | 9 | Not integrated: takes a raw dict, no BioCypher API, tests or docs; branch is 84 commits behind biocypher `main` | |
+| 10 | Re-implements BioCypher's naming instead of using it, so names diverge from what is in Neo4j: node labels too, not only relationship types (see below). Also ignores `label_as_edge`/`synonym_for`, `is_a`, `inherit_properties`/`exclude_properties` and tail ontologies | `compare_naming.py` |
+
+### Finding 10: BioCypher internals vs. the PR
+
+BioCypher derives every label and relationship type with
+`Translator.name_sentence_to_pascal(parse_label(name))` (relationship type: the
+edge's schema name or `label_as_edge`; node labels: the class plus its ancestors
+from `ontology.get_ancestors()`, ordered by `labels_order`). The expanded schema
+with inherited properties is in `ontology.mapping.extended_schema`, the hierarchy
+in the ontology's NetworkX graph. The PR reads the raw YAML dict and uses its own
+`capitalize()`-based conversion instead:
+
+| Schema name | BioCypher writes | PR node type / label | PR relationship type |
+|---|---|---|---|
+| physical entity representation | `PhysicalEntityRepresentation` | `PhysicalEntityRepresentation` | `PHYSICAL_ENTITY_REPRESENTATION` ❌ |
+| contained entity | `ContainedEntity` | `ContainedEntity` | `CONTAINED_ENTITY` ❌ |
+| mRNA | `MRNA` | `Mrna` ❌ | `MRNA` |
+| DNA sequence variant | `DNASequenceVariant` | `DnaSequenceVariant` ❌ | `DNA_SEQUENCE_VARIANT` ❌ |
+| non-coding RNA | `NoncodingRNA` | `NonCodingRna` ❌ | `NON_CODING_RNA` ❌ |
+| SBML model | `SBMLModel` | `SbmlModel` ❌ | `SBML_MODEL` ❌ |
+| protein_isoform | `Protein_isoform` | `ProteinIsoform` ❌ | `PROTEIN_ISOFORM` ❌ |
+
+Our SBML class names are plain lowercase words, so the node labels happened to
+match in the tests above.
+
+The related NetworkX metagraph writer
+([biocypher PR #455](https://github.com/biocypher/biocypher/pull/455)) shows the
+alternative: it is an output writer (`_Writer`) that gets the `Translator`, takes
+names from `translator.mappings` / `ontology.get_renaming()`, starts from the
+ontology's NetworkX graph (full hierarchy, user extensions, tail ontologies), and
+records the source/target types of edges from the data as they are written (so it
+does not need `source`/`target` in the schema). It is blocked on edge renaming
+(`label_as_edge` breaks ancestor lookups; [#435](https://github.com/biocypher/biocypher/issues/435),
+[PR #516](https://github.com/biocypher/biocypher/pull/516)), which a generator using
+BioCypher's names would depend on too. `BioCypher.write_schema_info()` already
+exports the expanded schema and what is present in the graph (with a TODO for edge
+source/target types).
 
 With fixes for 2, 3 and 6, all queries match Cypher and relationship
 properties are available through the connection API.
