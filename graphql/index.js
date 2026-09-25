@@ -17,7 +17,18 @@ const port = Number(process.env.PORT ?? 4000);
 
 // The database runs without authentication
 const driver = neo4j.driver(uri);
-await driver.getServerInfo();
+
+// Wait for the database, which may still be starting (e.g. after `docker compose up`)
+for (let attempt = 1; ; attempt++) {
+  try {
+    await driver.getServerInfo();
+    break;
+  } catch (error) {
+    if (attempt === 30) throw error;
+    console.log(`Waiting for ${uri} (${error.code ?? error.message})`);
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+  }
+}
 console.log(`Connected to ${uri}`);
 
 const typeDefs = readFileSync(schemaPath, "utf-8");

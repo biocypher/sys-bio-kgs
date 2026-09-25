@@ -22,22 +22,22 @@ type Model implements SystemsBiologyRepresentation @node(labels: ["Model"]) {
   sbo: String
   notes_base64: String
   notes: String
-  encodes: String
-  hasPart: String
-  hasProperty: String
-  hasVersion: String
-  is: String
-  isDescribedBy: String
-  isEncodedBy: String
-  isHomologTo: String
-  isPartOf: String
-  isPropertyOf: String
-  isVersionOf: String
-  occursIn: String
-  hasTaxon: String
-  hasInstance: String
-  isDerivedFrom: String
-  isInstanceOf: String
+  encodes: [String!]
+  hasPart: [String!]
+  hasProperty: [String!]
+  hasVersion: [String!]
+  is: [String!]
+  isDescribedBy: [String!]
+  isEncodedBy: [String!]
+  isHomologTo: [String!]
+  isPartOf: [String!]
+  isPropertyOf: [String!]
+  isVersionOf: [String!]
+  occursIn: [String!]
+  hasTaxon: [String!]
+  hasInstance: [String!]
+  isDerivedFrom: [String!]
+  isInstanceOf: [String!]
   entities: [PhysicalEntityRepresentation!]! @relationship(type: "IsEntityOf", direction: IN)
   processes: [Process!]! @relationship(type: "IsProcessOf", direction: IN)
   compartments: [PhysicalCompartment!]! @relationship(type: "IsCompartmentOf", direction: IN)
@@ -49,22 +49,22 @@ type PhysicalEntityRepresentation implements SystemsBiologyRepresentation @node(
   sbo: String
   notes_base64: String
   notes: String
-  encodes: String
-  hasPart: String
-  hasProperty: String
-  hasVersion: String
-  is: String
-  isDescribedBy: String
-  isEncodedBy: String
-  isHomologTo: String
-  isPartOf: String
-  isPropertyOf: String
-  isVersionOf: String
-  occursIn: String
-  hasTaxon: String
-  hasInstance: String
-  isDerivedFrom: String
-  isInstanceOf: String
+  encodes: [String!]
+  hasPart: [String!]
+  hasProperty: [String!]
+  hasVersion: [String!]
+  is: [String!]
+  isDescribedBy: [String!]
+  isEncodedBy: [String!]
+  isHomologTo: [String!]
+  isPartOf: [String!]
+  isPropertyOf: [String!]
+  isVersionOf: [String!]
+  occursIn: [String!]
+  hasTaxon: [String!]
+  hasInstance: [String!]
+  isDerivedFrom: [String!]
+  isInstanceOf: [String!]
   model: [Model!]! @relationship(type: "IsEntityOf", direction: OUT)
   compartment: [PhysicalCompartment!]! @relationship(type: "ContainedEntity", direction: OUT, properties: "ContainedEntityProperties")
   reactantOf: [Process!]! @relationship(type: "Reactant", direction: OUT, properties: "ReactantProperties")
@@ -78,22 +78,22 @@ type PhysicalCompartment implements SystemsBiologyRepresentation @node(labels: [
   sbo: String
   notes_base64: String
   notes: String
-  encodes: String
-  hasPart: String
-  hasProperty: String
-  hasVersion: String
-  is: String
-  isDescribedBy: String
-  isEncodedBy: String
-  isHomologTo: String
-  isPartOf: String
-  isPropertyOf: String
-  isVersionOf: String
-  occursIn: String
-  hasTaxon: String
-  hasInstance: String
-  isDerivedFrom: String
-  isInstanceOf: String
+  encodes: [String!]
+  hasPart: [String!]
+  hasProperty: [String!]
+  hasVersion: [String!]
+  is: [String!]
+  isDescribedBy: [String!]
+  isEncodedBy: [String!]
+  isHomologTo: [String!]
+  isPartOf: [String!]
+  isPropertyOf: [String!]
+  isVersionOf: [String!]
+  occursIn: [String!]
+  hasTaxon: [String!]
+  hasInstance: [String!]
+  isDerivedFrom: [String!]
+  isInstanceOf: [String!]
   model: [Model!]! @relationship(type: "IsCompartmentOf", direction: OUT)
   entities: [PhysicalEntityRepresentation!]! @relationship(type: "ContainedEntity", direction: IN, properties: "ContainedEntityProperties")
 }
@@ -104,22 +104,22 @@ type Process implements SystemsBiologyRepresentation @node(labels: ["Process"]) 
   sbo: String
   notes_base64: String
   notes: String
-  encodes: String
-  hasPart: String
-  hasProperty: String
-  hasVersion: String
-  is: String
-  isDescribedBy: String
-  isEncodedBy: String
-  isHomologTo: String
-  isPartOf: String
-  isPropertyOf: String
-  isVersionOf: String
-  occursIn: String
-  hasTaxon: String
-  hasInstance: String
-  isDerivedFrom: String
-  isInstanceOf: String
+  encodes: [String!]
+  hasPart: [String!]
+  hasProperty: [String!]
+  hasVersion: [String!]
+  is: [String!]
+  isDescribedBy: [String!]
+  isEncodedBy: [String!]
+  isHomologTo: [String!]
+  isPartOf: [String!]
+  isPropertyOf: [String!]
+  isVersionOf: [String!]
+  occursIn: [String!]
+  hasTaxon: [String!]
+  hasInstance: [String!]
+  isDerivedFrom: [String!]
+  isInstanceOf: [String!]
   model: [Model!]! @relationship(type: "IsProcessOf", direction: OUT)
   reactants: [PhysicalEntityRepresentation!]! @relationship(type: "Reactant", direction: IN, properties: "ReactantProperties")
   modifiers: [PhysicalEntityRepresentation!]! @relationship(type: "Modifier", direction: IN, properties: "ModifierProperties")
@@ -132,22 +132,22 @@ type ReactantProperties @relationshipProperties {
   sbo: String
   notes_base64: String
   notes: String
-  encodes: String
-  hasPart: String
-  hasProperty: String
-  hasVersion: String
-  is: String
-  isDescribedBy: String
-  isEncodedBy: String
-  isHomologTo: String
-  isPartOf: String
-  isPropertyOf: String
-  isVersionOf: String
-  occursIn: String
-  hasTaxon: String
-  hasInstance: String
-  isDerivedFrom: String
-  isInstanceOf: String
+  encodes: [String!]
+  hasPart: [String!]
+  hasProperty: [String!]
+  hasVersion: [String!]
+  is: [String!]
+  isDescribedBy: [String!]
+  isEncodedBy: [String!]
+  isHomologTo: [String!]
+  isPartOf: [String!]
+  isPropertyOf: [String!]
+  isVersionOf: [String!]
+  occursIn: [String!]
+  hasTaxon: [String!]
+  hasInstance: [String!]
+  isDerivedFrom: [String!]
+  isInstanceOf: [String!]
 }
 
 type ProductProperties @relationshipProperties {
@@ -156,22 +156,22 @@ type ProductProperties @relationshipProperties {
   sbo: String
   notes_base64: String
   notes: String
-  encodes: String
-  hasPart: String
-  hasProperty: String
-  hasVersion: String
-  is: String
-  isDescribedBy: String
-  isEncodedBy: String
-  isHomologTo: String
-  isPartOf: String
-  isPropertyOf: String
-  isVersionOf: String
-  occursIn: String
-  hasTaxon: String
-  hasInstance: String
-  isDerivedFrom: String
-  isInstanceOf: String
+  encodes: [String!]
+  hasPart: [String!]
+  hasProperty: [String!]
+  hasVersion: [String!]
+  is: [String!]
+  isDescribedBy: [String!]
+  isEncodedBy: [String!]
+  isHomologTo: [String!]
+  isPartOf: [String!]
+  isPropertyOf: [String!]
+  isVersionOf: [String!]
+  occursIn: [String!]
+  hasTaxon: [String!]
+  hasInstance: [String!]
+  isDerivedFrom: [String!]
+  isInstanceOf: [String!]
 }
 
 type ModifierProperties @relationshipProperties {
@@ -179,22 +179,22 @@ type ModifierProperties @relationshipProperties {
   sbo: String
   notes_base64: String
   notes: String
-  encodes: String
-  hasPart: String
-  hasProperty: String
-  hasVersion: String
-  is: String
-  isDescribedBy: String
-  isEncodedBy: String
-  isHomologTo: String
-  isPartOf: String
-  isPropertyOf: String
-  isVersionOf: String
-  occursIn: String
-  hasTaxon: String
-  hasInstance: String
-  isDerivedFrom: String
-  isInstanceOf: String
+  encodes: [String!]
+  hasPart: [String!]
+  hasProperty: [String!]
+  hasVersion: [String!]
+  is: [String!]
+  isDescribedBy: [String!]
+  isEncodedBy: [String!]
+  isHomologTo: [String!]
+  isPartOf: [String!]
+  isPropertyOf: [String!]
+  isVersionOf: [String!]
+  occursIn: [String!]
+  hasTaxon: [String!]
+  hasInstance: [String!]
+  isDerivedFrom: [String!]
+  isInstanceOf: [String!]
 }
 
 type ContainedEntityProperties @relationshipProperties {
@@ -202,20 +202,20 @@ type ContainedEntityProperties @relationshipProperties {
   sbo: String
   notes_base64: String
   notes: String
-  encodes: String
-  hasPart: String
-  hasProperty: String
-  hasVersion: String
-  is: String
-  isDescribedBy: String
-  isEncodedBy: String
-  isHomologTo: String
-  isPartOf: String
-  isPropertyOf: String
-  isVersionOf: String
-  occursIn: String
-  hasTaxon: String
-  hasInstance: String
-  isDerivedFrom: String
-  isInstanceOf: String
+  encodes: [String!]
+  hasPart: [String!]
+  hasProperty: [String!]
+  hasVersion: [String!]
+  is: [String!]
+  isDescribedBy: [String!]
+  isEncodedBy: [String!]
+  isHomologTo: [String!]
+  isPartOf: [String!]
+  isPropertyOf: [String!]
+  isVersionOf: [String!]
+  occursIn: [String!]
+  hasTaxon: [String!]
+  hasInstance: [String!]
+  isDerivedFrom: [String!]
+  isInstanceOf: [String!]
 }

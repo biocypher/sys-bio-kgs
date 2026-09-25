@@ -52,6 +52,3 @@ Each schema keeps its examples and checks next to it, as
   matches nodes by labels they have. A query on a parent class therefore also
   returns nodes of its subclasses: `physicalEntityRepresentations` includes the
   compartment, and the `SystemsBiologyRepresentation` interface returns it twice.
-- Annotation properties are declared as `list[string]` in the BioCypher schema,
-  which BioCypher does not recognise as an array type (`str[]` is), so they are
-  stored and typed as `String`.

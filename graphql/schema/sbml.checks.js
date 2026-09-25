@@ -30,4 +30,8 @@ export const checks = [
   ["distinct nodes via interface", "{ systemsBiologyRepresentations { id } }",
    (d) => new Set(d.systemsBiologyRepresentations.map((n) => n.id)).size,
    "MATCH (n:SystemsBiologyRepresentation) RETURN count(n)"],
+  ["list property: annotations of species Y (isVersionOf)",
+   "{ physicalEntityRepresentations(where: { id: { eq: \"Y\" } }) { isVersionOf } }",
+   (d) => d.physicalEntityRepresentations[0].isVersionOf.length,
+   "MATCH (n:PhysicalEntityRepresentation {id: 'Y'}) RETURN size(n.isVersionOf)"],
 ];
