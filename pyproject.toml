@@ -33,6 +33,14 @@ momapy_sbml_kinetic = [
     "momapy @ git+https://github.com/adrienrougny/momapy.git@sbml_kinetic",
 ]
 
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
+
 [tool.hatch.metadata]
 allow-direct-references = true
 
