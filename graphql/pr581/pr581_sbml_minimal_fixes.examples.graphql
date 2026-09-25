@@ -12,7 +12,7 @@ query Models {
 }
 
 # Species with their compartment and model
-# (also returns the compartment itself: it carries the PhysicalEntityRepresentation label)
+# (includes the compartment: physical compartment is a subclass of physical entity representation)
 query Species {
   physicalEntityRepresentations {
     id

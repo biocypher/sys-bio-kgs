@@ -95,10 +95,9 @@ source/target types).
 With fixes for 2, 3 and 6, all queries match Cypher and relationship
 properties are available through the connection API.
 
-Found along the way, not specific to the PR: nodes carry parent-class labels, so a
-query on a parent class also returns subclass nodes (7 species instead of 6, also
-with the introspector). A generator has to decide how to handle this, e.g. with
-interfaces for parent classes.
+Queries on a class also return nodes of its subclasses (e.g. the compartment
+among the physical entity representations), because BioCypher writes the labels
+of all ancestors. That is expected subclass behaviour, not an issue.
 
 | | PR #581 | Introspector | `../schema/sbml.graphql` |
 |---|---|---|---|

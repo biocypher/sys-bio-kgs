@@ -48,7 +48,8 @@ Each schema keeps its examples and checks next to it, as
 
 ## Notes
 
-- Nodes carry the labels of their parent classes, and the Neo4j GraphQL Library
-  matches nodes by labels they have. A query on a parent class therefore also
-  returns nodes of its subclasses: `physicalEntityRepresentations` includes the
-  compartment, and the `SystemsBiologyRepresentation` interface returns it twice.
+- Nodes carry the labels of their parent classes, so a query on a class also
+  returns nodes of its subclasses (as expected: `physicalEntityRepresentations`
+  includes the compartment). The `SystemsBiologyRepresentation` interface,
+  however, returns such nodes once per matching type: the compartment appears
+  twice, as `PhysicalCompartment` and as `PhysicalEntityRepresentation`.

@@ -4,9 +4,9 @@ const flat = (nodes, field) => nodes.flatMap((n) => n[field]).length;
 export const checks = [
   ["models", "{ models { id name } }", (d) => d.models.length,
    "MATCH (n:Model) RETURN count(n)"],
-  ["species (PhysicalEntityRepresentation)", "{ physicalEntityRepresentations { id name } }",
+  ["physical entity representations (incl. subclasses)", "{ physicalEntityRepresentations { id name } }",
    (d) => d.physicalEntityRepresentations.length,
-   "MATCH (n:PhysicalEntityRepresentation) WHERE NOT n:PhysicalCompartment RETURN count(n)"],
+   "MATCH (n:PhysicalEntityRepresentation) RETURN count(n)"],
   ["reactions (Process)", "{ processes { id name } }", (d) => d.processes.length,
    "MATCH (n:Process) RETURN count(n)"],
   ["species -> reaction (reactantOf)", "{ physicalEntityRepresentations { reactantOf { id } } }",
