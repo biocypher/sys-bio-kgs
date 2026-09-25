@@ -84,7 +84,8 @@ class Similarity(Relationship):
 
 # ---- Physical Entity Representation ----
 class PhysicalEntityRepresentation(SystemsBiologyRepresentation):
-    pass
+    # species → compartment ("contained entity" edge)
+    compartment = RelationshipTo("PhysicalCompartment", "ContainedEntity")
 
 # ---- Material Entity ----
 class MaterialEntity(PhysicalEntityRepresentation):

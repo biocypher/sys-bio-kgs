@@ -1,49 +1,62 @@
+# Three-step pipeline: build -> import -> deploy.
+# Every step reads/writes host directories, so each can be run on its own and
+# its files inspected or removed locally. See "Docker Usage" in README.md.
+#
+#   NEO4J_DIR   host directory for the Neo4j database, logs and plugins (default: neo4j)
+#   PIPELINE_SCRIPT  script run by the build step (default: create_knowledge_graph_sbgn_sbml.py)
+#   CLEAN_OUTPUT     1: replace earlier build output (default), 0: add to it
+
+x-user: &user "${UID:-1000}:${GID:-1000}"
+
 services:
 
+  # Run the BioCypher pipeline -> biocypher-out/build2neo/
   build:
     image: biocypher/base:1.2.0
-    container_name: build
-    environment:
-      - UV_EXTRA_INDEX_URL=https://download.pytorch.org/whl/cpu
     volumes:
-      - biocypher_neo4j_volume:/usr/app/data
-      - .:/src/
-    command:
-      - /bin/bash
-      - /src/scripts/build.sh
+      - .:/src
+    environment:
+      UV_EXTRA_INDEX_URL: https://download.pytorch.org/whl/cpu
+      PIPELINE_SCRIPT: ${PIPELINE_SCRIPT:-create_knowledge_graph_sbgn_sbml.py}
+      CLEAN_OUTPUT: ${CLEAN_OUTPUT:-1}
+    entrypoint: ["/bin/bash", "/src/scripts/build.sh"]
+    user: *user
 
+  # neo4j-admin import biocypher-out/build2neo/ -> ${NEO4J_DIR}/data/
   import:
-    image: neo4j:4.4-enterprise
-    container_name: import
+    image: neo4j:5.26-community
+    volumes:
+      - ./biocypher-out/build2neo:/build2neo:ro
+      - ./${NEO4J_DIR:-neo4j}/data:/data
+      - ./${NEO4J_DIR:-neo4j}/logs:/logs
+      - ./scripts/import.sh:/scripts/import.sh:ro
     environment:
       NEO4J_AUTH: none
-      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
-      FILL_DB_ON_STARTUP: "yes"
-    volumes:
-      - biocypher_neo4j_volume:/data
-      - ./scripts/import.sh:/scripts/import.sh
-    command:
-      - /bin/bash
-      - /scripts/import.sh
+    command: ["/bin/bash", "/scripts/import.sh"]
     depends_on:
       build:
         condition: service_completed_successfully
+    user: *user
 
+  # Serve ${NEO4J_DIR}/data/ at http://localhost:7474 (bolt: 7687), with APOC
   deploy:
-    image: neo4j:4.4-enterprise
-    container_name: deploy
+    image: neo4j:5.26-community
     volumes:
-      - biocypher_neo4j_volume:/data
+      - ./${NEO4J_DIR:-neo4j}/data:/data
+      - ./${NEO4J_DIR:-neo4j}/logs:/logs
+      - ./${NEO4J_DIR:-neo4j}/plugins:/plugins
     environment:
-      NEO4J_dbms_security_auth__enabled: "false"
-      NEO4J_dbms_databases_default__to__read__only: "false"
-      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+      NEO4J_AUTH: none
+      NEO4J_server_databases_default__to__read__only: "false"
+      NEO4J_PLUGINS: '["apoc"]'
+      NEO4J_dbms_security_procedures_unrestricted: "apoc.*"
+      NEO4J_apoc_export_file_enabled: "true"
+      NEO4J_apoc_import_file_enabled: "true"
+      NEO4J_apoc_import_file_use__neo4j__config: "false"
     ports:
       - "127.0.0.1:7474:7474"
       - "127.0.0.1:7687:7687"
     depends_on:
       import:
         condition: service_completed_successfully
-
-volumes:
-  biocypher_neo4j_volume:
+    user: *user

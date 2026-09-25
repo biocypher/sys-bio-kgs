@@ -253,8 +253,24 @@ class SBMLAdapter:
         for note in notes:
             break
 
-        note = base64.b64encode(note, altchars=None).decode()
+        note = SBMLAdapter._str_to_base64(note)
         return note
+
+    @staticmethod
+    def _str_to_base64(text: str) -> str:
+        """Convert string to base64 encoded string.
+        To decode (e.g. notes):
+            MATCH (n) WHERE n.notes_base64 IS NOT NULL
+            SET n.notes =  apoc.text.base64Decode(n.notes_base64)
+        """
+        if text is None:
+            return None
+
+        # check if byte string
+        if isinstance(text, str):
+            text = text.encode()
+
+        return base64.b64encode(text, altchars=None).decode()
 
     @staticmethod
     def _parse_annotations_to_node_properties(annotations: frozenset) -> Dict[str, Any]:

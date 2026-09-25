@@ -140,6 +140,7 @@ dmypy.json
 # Project-specific
 logs/
 output/
+neo4j/
 data/
 *.db
 *.sqlite
@@ -148,3 +149,10 @@ data/
 /scripts/sbgn_sbml_matching/sbgn_annotated
 /scripts/sbgn_sbml_matching/sbml
 scripts/sbgn_sbml_matching/sbgn_sbml_identifier_overlap.csv
+
+# Local development / runtime
+dev/
+*.sublime-project
+*.sublime-workspace
+export_scripts/*.xml
+export_scripts/generated_models.py

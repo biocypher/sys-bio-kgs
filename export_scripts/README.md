@@ -1,9 +1,14 @@
 # Export from Neo4j KG to XML
 
-## Dependecies
+## Dependencies
 
 neomodel
 python-libsbml
+
+Install with `pip install -e ".[export]"`.
+
+The deploy container must be running (`docker-compose up`). Notes are
+decoded from `notes_base64`, so the APOC decode step is not required.
 
 ## Usage
 
