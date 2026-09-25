@@ -50,9 +50,11 @@ neo4j:
   user: neo4j
   password: neo4j
 
-  delimiter: ";"
-  array_delimiter: "|"
-  quote_character: "'"
+  # CSV (not Parquet) keeps the output human-readable; delimiters use the
+  # BioCypher/neo4j-admin defaults (",", ";", '"')
+  file_format: csv
+  # Neo4j relationships have a single type
+  edge_labels_order: Leaves
 
   multi_db: true
 
@@ -94,7 +96,7 @@ sqlite:
 #---- RDF (Resource Description Framework) data model
 rdf:
   ### RDF configuration ###
-  rdf_format: turtle
+  file_format: turtle
 
 #---- NetworkX graph data model
 networkx:

@@ -6,7 +6,12 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 # Files written by the BioCypher neo4j batch writer
-BIOCYPHER_OUTPUT_PATTERNS = ("*-header.csv", "*-part*.csv", "neo4j-admin-import-call.sh")
+BIOCYPHER_OUTPUT_PATTERNS = (
+    "*-header.csv",
+    "*-part*.csv",
+    "*-part*.parquet",
+    "neo4j-admin-import-call.sh",
+)
 
 
 def clean_biocypher_output(output_directory: str | Path | None) -> int:
