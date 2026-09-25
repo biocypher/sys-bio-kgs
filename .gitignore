@@ -151,8 +151,6 @@ scripts/sbgn_sbml_matching/sbgn_sbml_identifier_overlap.csv
 
 # Local development / runtime
 dev/
-neo4j_db/
-neo4j_logs/
 *.sublime-project
 *.sublime-workspace
 export_scripts/*.xml
